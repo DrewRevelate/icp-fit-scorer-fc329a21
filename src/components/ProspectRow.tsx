@@ -113,18 +113,32 @@ export function ProspectRow({
         >
           {/* Receipt-style signal breakdown */}
           <div className="glass-card overflow-hidden">
-            <div className="px-4 py-2 border-b border-border/50 bg-secondary/30">
+            <div className="px-4 py-2 border-b border-border/50 bg-secondary/30 flex items-center justify-between">
               <span className="text-xs text-muted-foreground font-mono">SIGNAL BREAKDOWN</span>
+              {prospect.scoringMode === 'advanced' && (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">GTM Partners</Badge>
+              )}
             </div>
             <div className="px-4 py-2">
               {[...prospect.criteriaBreakdown]
-                .sort((a, b) => (b.score / b.maxScore) - (a.score / a.maxScore))
+                .sort((a, b) => {
+                  // Sort by advancedScore if available, otherwise by percentage
+                  if (prospect.scoringMode === 'advanced' && a.advancedScore !== undefined && b.advancedScore !== undefined) {
+                    return b.advancedScore - a.advancedScore;
+                  }
+                  return (b.score / b.maxScore) - (a.score / a.maxScore);
+                })
                 .map((criteria) => {
+                  const hasAdvancedScore = prospect.scoringMode === 'advanced' && criteria.advancedScore !== undefined;
                   const percentage = Math.round((criteria.score / criteria.maxScore) * 100);
                   const isPoor = percentage < 40;
                   const isModerate = percentage >= 40 && percentage < 70;
+                  const isNegative = hasAdvancedScore && criteria.advancedScore! < 0;
                   
                   const getColor = () => {
+                    if (hasAdvancedScore) {
+                      return isNegative ? 'text-destructive' : 'text-success';
+                    }
                     if (isPoor) return 'text-destructive';
                     if (isModerate) return 'text-warning';
                     return 'text-success';
@@ -140,16 +154,42 @@ export function ProspectRow({
                         <p className="text-xs text-muted-foreground truncate">{criteria.reasoning}</p>
                       </div>
                       <div className={`font-mono text-sm font-semibold shrink-0 ml-3 ${getColor()}`}>
-                        {isPoor ? '−' : '+'}{criteria.score}
-                        <span className="text-muted-foreground font-normal">/{criteria.maxScore}</span>
+                        {hasAdvancedScore ? (
+                          <>
+                            {criteria.advancedScore! > 0 ? '+' : ''}{criteria.advancedScore}
+                          </>
+                        ) : (
+                          <>
+                            {isPoor ? '−' : '+'}{criteria.score}
+                            <span className="text-muted-foreground font-normal">/{criteria.maxScore}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   );
                 })}
             </div>
             <div className="px-4 py-2 border-t border-border bg-secondary/50 flex justify-between items-center">
-              <span className="text-xs font-semibold">Total</span>
-              <span className="font-mono font-bold text-primary">{prospect.totalScore}/100</span>
+              <span className="text-xs font-semibold">
+                {prospect.scoringMode === 'advanced' ? 'Net Score' : 'Total'}
+              </span>
+              {prospect.scoringMode === 'advanced' ? (
+                <div className="flex items-center gap-2">
+                  <span className={`font-mono font-bold ${
+                    prospect.criteriaBreakdown.reduce((sum, c) => sum + (c.advancedScore || 0), 0) >= 0 
+                      ? 'text-success' 
+                      : 'text-destructive'
+                  }`}>
+                    {(() => {
+                      const total = prospect.criteriaBreakdown.reduce((sum, c) => sum + (c.advancedScore || 0), 0);
+                      return total > 0 ? `+${total}` : total;
+                    })()}
+                  </span>
+                  <span className="text-xs text-muted-foreground">(max +{prospect.criteriaBreakdown.length * 5})</span>
+                </div>
+              ) : (
+                <span className="font-mono font-bold text-primary">{prospect.totalScore}/100</span>
+              )}
             </div>
           </div>
           

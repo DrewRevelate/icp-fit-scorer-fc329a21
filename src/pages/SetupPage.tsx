@@ -4,11 +4,12 @@ import { useICPStore } from '@/stores/icpStore';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, RotateCcw, CheckCircle, Zap, Scale, Calculator, Brain } from 'lucide-react';
+import { Settings, RotateCcw, CheckCircle, Zap, Scale, Calculator, Brain, Target } from 'lucide-react';
 import { DEFAULT_CRITERIA, ScoringMode } from '@/types/icp';
 import { toast } from '@/hooks/use-toast';
 import { RuleBasedSettings } from '@/components/scoring-rules';
 import { PredictiveSettings } from '@/components/predictive-scoring';
+import { IntentSettings } from '@/components/intent-scoring';
 
 export default function SetupPage() {
   const { criteria, updateCriteriaWeight, setCriteria, scoringMode, setScoringMode } = useICPStore();
@@ -69,18 +70,22 @@ export default function SetupPage() {
       </motion.div>
 
       <Tabs defaultValue="ai-scoring" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
           <TabsTrigger value="ai-scoring" className="gap-2">
             <Zap className="h-4 w-4" />
-            AI Scoring
+            AI
           </TabsTrigger>
           <TabsTrigger value="rule-based" className="gap-2">
             <Calculator className="h-4 w-4" />
-            Rule-Based
+            Rules
           </TabsTrigger>
           <TabsTrigger value="predictive" className="gap-2">
             <Brain className="h-4 w-4" />
             Predictive
+          </TabsTrigger>
+          <TabsTrigger value="intent" className="gap-2">
+            <Target className="h-4 w-4" />
+            Intent
           </TabsTrigger>
         </TabsList>
 
@@ -219,6 +224,11 @@ export default function SetupPage() {
         {/* Predictive Scoring Tab */}
         <TabsContent value="predictive">
           <PredictiveSettings />
+        </TabsContent>
+
+        {/* Intent-Based Scoring Tab */}
+        <TabsContent value="intent">
+          <IntentSettings />
         </TabsContent>
       </Tabs>
     </div>

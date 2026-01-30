@@ -169,7 +169,7 @@ export function getScoreLabel(category: ScoreCategory): string {
   }
 }
 
-// Enriched company data from URL scraping
+// Enriched company data from waterfall enrichment
 export interface EnrichedCompany {
   companyName: string;
   description: string;
@@ -181,4 +181,5 @@ export interface EnrichedCompany {
   region: string;
   website: string;
   rawContent: string;
+  dataSources?: string[]; // Sources used in waterfall (LinkedIn, Crunchbase, Website)
 }

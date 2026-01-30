@@ -111,11 +111,26 @@ export function EnrichedDataCard({ data }: EnrichedDataCardProps) {
         )}
       </div>
 
-      {/* Footer */}
+      {/* Footer with Data Sources */}
       <div className="px-4 py-2 border-t border-border/50 bg-secondary/20">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Sparkles className="h-3 w-3" />
-          <span>Data extracted automatically from company website</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Sparkles className="h-3 w-3" />
+            <span>Waterfall enrichment</span>
+          </div>
+          {data.dataSources && data.dataSources.length > 0 && (
+            <div className="flex items-center gap-1">
+              {data.dataSources.map((source) => (
+                <Badge 
+                  key={source} 
+                  variant="outline" 
+                  className="text-[10px] px-1.5 py-0 h-5 bg-background"
+                >
+                  {source}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

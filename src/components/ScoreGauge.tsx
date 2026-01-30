@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { getScoreCategory, getScoreLabel } from '@/types/icp';
+import { Tier, TierDefinition, getTierFromScore } from '@/types/icp';
+import { Zap, TrendingUp, Clock, XCircle } from 'lucide-react';
 
 interface ScoreGaugeProps {
   score: number;
@@ -8,10 +9,41 @@ interface ScoreGaugeProps {
   animate?: boolean;
 }
 
+const tierColors: Record<Tier, { stroke: string; glow: string; bg: string }> = {
+  A: { 
+    stroke: 'hsl(var(--success))', 
+    glow: 'hsl(var(--success) / 0.3)',
+    bg: 'hsl(var(--success) / 0.15)'
+  },
+  B: { 
+    stroke: 'hsl(var(--primary))', 
+    glow: 'hsl(var(--primary) / 0.3)',
+    bg: 'hsl(var(--primary) / 0.15)'
+  },
+  C: { 
+    stroke: 'hsl(var(--warning))', 
+    glow: 'hsl(var(--warning) / 0.3)',
+    bg: 'hsl(var(--warning) / 0.15)'
+  },
+  D: { 
+    stroke: 'hsl(var(--destructive))', 
+    glow: 'hsl(var(--destructive) / 0.3)',
+    bg: 'hsl(var(--destructive) / 0.15)'
+  },
+};
+
+const tierIcons: Record<Tier, typeof Zap> = {
+  A: Zap,
+  B: TrendingUp,
+  C: Clock,
+  D: XCircle,
+};
+
 export function ScoreGauge({ score, size = 280, animate = true }: ScoreGaugeProps) {
   const [displayScore, setDisplayScore] = useState(animate ? 0 : score);
-  const category = getScoreCategory(score);
-  const label = getScoreLabel(category);
+  const tierDef = getTierFromScore(score);
+  const colors = tierColors[tierDef.tier];
+  const TierIcon = tierIcons[tierDef.tier];
 
   const strokeWidth = 10;
   const radius = (size - strokeWidth) / 2;
@@ -45,91 +77,97 @@ export function ScoreGauge({ score, size = 280, animate = true }: ScoreGaugeProp
     requestAnimationFrame(animateScore);
   }, [score, animate]);
 
-  const getStrokeColor = () => {
-    switch (category) {
-      case 'poor':
-        return 'hsl(var(--score-poor))';
-      case 'moderate':
-        return 'hsl(var(--score-moderate))';
-      case 'strong':
-        return 'hsl(var(--score-strong))';
-    }
-  };
-
-  const getGlowColor = () => {
-    switch (category) {
-      case 'poor':
-        return 'hsl(var(--score-poor) / 0.3)';
-      case 'moderate':
-        return 'hsl(var(--score-moderate) / 0.3)';
-      case 'strong':
-        return 'hsl(var(--score-strong) / 0.3)';
-    }
-  };
-
   return (
     <motion.div
-      className="relative flex items-center justify-center"
+      className="relative flex flex-col items-center"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      <svg
-        width={size}
-        height={size}
-        className="transform -rotate-90"
-        style={{
-          filter: `drop-shadow(0 0 24px ${getGlowColor()})`,
-        }}
-      >
-        {/* Background track */}
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="hsl(var(--border))"
-          strokeWidth={strokeWidth}
-          className="opacity-50"
-        />
-        
-        {/* Progress arc */}
-        <motion.circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke={getStrokeColor()}
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
-        />
-      </svg>
+      <div className="relative">
+        <svg
+          width={size}
+          height={size}
+          className="transform -rotate-90"
+          style={{
+            filter: `drop-shadow(0 0 24px ${colors.glow})`,
+          }}
+        >
+          {/* Background track */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="hsl(var(--border))"
+            strokeWidth={strokeWidth}
+            className="opacity-50"
+          />
+          
+          {/* Progress arc */}
+          <motion.circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={colors.stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset: offset }}
+            transition={{ duration: 1.5, ease: 'easeOut' }}
+          />
+        </svg>
 
-      {/* Center content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <motion.span
-          className="font-display text-6xl font-bold tabular-nums"
-          style={{ color: getStrokeColor() }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          {displayScore}
-        </motion.span>
-        <motion.span
-          className="text-base font-medium text-muted-foreground"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-        >
-          {label}
-        </motion.span>
+        {/* Center content */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <motion.div
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <span 
+              className="font-display text-7xl font-bold"
+              style={{ color: colors.stroke }}
+            >
+              {tierDef.tier}
+            </span>
+          </motion.div>
+          <motion.span
+            className="mt-1 text-2xl font-medium tabular-nums text-muted-foreground"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+          >
+            {displayScore}/100
+          </motion.span>
+        </div>
       </div>
+
+      {/* Tier Action Badge */}
+      <motion.div
+        className="mt-6 flex flex-col items-center gap-2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+      >
+        <div 
+          className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+          style={{ 
+            backgroundColor: colors.bg,
+            color: colors.stroke,
+          }}
+        >
+          <TierIcon className="h-4 w-4" />
+          {tierDef.action}
+        </div>
+        <p className="max-w-xs text-center text-sm text-muted-foreground">
+          {tierDef.description}
+        </p>
+      </motion.div>
     </motion.div>
   );
 }

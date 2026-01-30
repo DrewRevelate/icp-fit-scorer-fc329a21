@@ -16,12 +16,59 @@ export interface CriteriaScore {
   icon: string;
 }
 
+export type Tier = 'A' | 'B' | 'C' | 'D';
+
+export interface TierDefinition {
+  tier: Tier;
+  label: string;
+  action: string;
+  description: string;
+  minScore: number;
+  maxScore: number;
+}
+
+export const TIER_DEFINITIONS: TierDefinition[] = [
+  {
+    tier: 'A',
+    label: 'Tier A',
+    action: 'Pursue Aggressively',
+    description: 'Ideal customer profile match. Prioritize for immediate outreach with personalized approach.',
+    minScore: 80,
+    maxScore: 100,
+  },
+  {
+    tier: 'B',
+    label: 'Tier B',
+    action: 'Nurture & Qualify',
+    description: 'Strong potential fit. Engage with targeted content and qualify further before aggressive pursuit.',
+    minScore: 60,
+    maxScore: 79,
+  },
+  {
+    tier: 'C',
+    label: 'Tier C',
+    action: 'Deprioritize',
+    description: 'Partial fit with gaps. Add to nurture campaigns but focus resources on higher-tier prospects.',
+    minScore: 40,
+    maxScore: 59,
+  },
+  {
+    tier: 'D',
+    label: 'Tier D',
+    action: 'Disqualify',
+    description: 'Poor fit for current ICP. Do not pursue—archive or revisit if criteria change.',
+    minScore: 0,
+    maxScore: 39,
+  },
+];
+
 export interface ProspectScore {
   id: string;
   companyName: string;
   companyDescription: string;
   totalScore: number;
-  scoreCategory: 'poor' | 'moderate' | 'strong';
+  tier: Tier;
+  tierDefinition: TierDefinition;
   criteriaBreakdown: CriteriaScore[];
   openingLine: string;
   createdAt: string;
@@ -76,13 +123,23 @@ export const DEFAULT_CRITERIA: ICPCriteria[] = [
   },
 ];
 
-export function getScoreCategory(score: number): 'poor' | 'moderate' | 'strong' {
+export function getTierFromScore(score: number): TierDefinition {
+  const tier = TIER_DEFINITIONS.find(
+    (t) => score >= t.minScore && score <= t.maxScore
+  );
+  return tier || TIER_DEFINITIONS[TIER_DEFINITIONS.length - 1];
+}
+
+// Legacy compatibility
+export type ScoreCategory = 'poor' | 'moderate' | 'strong';
+
+export function getScoreCategory(score: number): ScoreCategory {
   if (score <= 40) return 'poor';
   if (score <= 70) return 'moderate';
   return 'strong';
 }
 
-export function getScoreLabel(category: 'poor' | 'moderate' | 'strong'): string {
+export function getScoreLabel(category: ScoreCategory): string {
   switch (category) {
     case 'poor':
       return 'Poor Fit';

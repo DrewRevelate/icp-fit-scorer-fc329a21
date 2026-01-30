@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      first_party_signals: {
+        Row: {
+          created_at: string
+          id: string
+          lead_id: string
+          metadata: Json | null
+          observed_at: string
+          page_url: string | null
+          signal_type: string
+          visit_count: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lead_id: string
+          metadata?: Json | null
+          observed_at?: string
+          page_url?: string | null
+          signal_type: string
+          visit_count?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lead_id?: string
+          metadata?: Json | null
+          observed_at?: string
+          page_url?: string | null
+          signal_type?: string
+          visit_count?: number | null
+        }
+        Relationships: []
+      }
       historical_deals: {
         Row: {
           closed_at: string
@@ -62,6 +95,69 @@ export type Database = {
           outcome?: string
           region?: string | null
           source_channel?: string | null
+        }
+        Relationships: []
+      }
+      intent_settings: {
+        Row: {
+          competitor_research_weight: number
+          created_at: string
+          demo_page_weight: number
+          email_click_weight: number
+          email_open_weight: number
+          email_reply_weight: number
+          first_party_weight: number
+          g2_research_weight: number
+          id: string
+          in_market_threshold: number
+          intent_enabled: boolean
+          intent_provider_weight: number
+          pricing_page_weight: number
+          product_page_weight: number
+          third_party_weight: number
+          trial_signup_weight: number
+          trustradius_weight: number
+          updated_at: string
+        }
+        Insert: {
+          competitor_research_weight?: number
+          created_at?: string
+          demo_page_weight?: number
+          email_click_weight?: number
+          email_open_weight?: number
+          email_reply_weight?: number
+          first_party_weight?: number
+          g2_research_weight?: number
+          id?: string
+          in_market_threshold?: number
+          intent_enabled?: boolean
+          intent_provider_weight?: number
+          pricing_page_weight?: number
+          product_page_weight?: number
+          third_party_weight?: number
+          trial_signup_weight?: number
+          trustradius_weight?: number
+          updated_at?: string
+        }
+        Update: {
+          competitor_research_weight?: number
+          created_at?: string
+          demo_page_weight?: number
+          email_click_weight?: number
+          email_open_weight?: number
+          email_reply_weight?: number
+          first_party_weight?: number
+          g2_research_weight?: number
+          id?: string
+          in_market_threshold?: number
+          intent_enabled?: boolean
+          intent_provider_weight?: number
+          pricing_page_weight?: number
+          product_page_weight?: number
+          third_party_weight?: number
+          trial_signup_weight?: number
+          trustradius_weight?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -194,6 +290,39 @@ export type Database = {
           qualification_threshold?: number
           rule_based_enabled?: boolean
           updated_at?: string
+        }
+        Relationships: []
+      }
+      third_party_signals: {
+        Row: {
+          confidence_level: string
+          created_at: string
+          id: string
+          lead_id: string
+          notes: string | null
+          observed_at: string
+          signal_type: string
+          source_name: string
+        }
+        Insert: {
+          confidence_level: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          notes?: string | null
+          observed_at?: string
+          signal_type: string
+          source_name: string
+        }
+        Update: {
+          confidence_level?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          notes?: string | null
+          observed_at?: string
+          signal_type?: string
+          source_name?: string
         }
         Relationships: []
       }

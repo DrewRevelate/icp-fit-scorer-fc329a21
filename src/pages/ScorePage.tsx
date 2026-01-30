@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SingleScoreInput } from '@/components/scoring/SingleScoreInput';
@@ -8,7 +8,10 @@ import { BatchResults } from '@/components/scoring/BatchResults';
 import { ScoreResult } from '@/components/scoring/ScoreResult';
 import { ScoringLoader } from '@/components/scoring/ScoringLoader';
 import { useICPStore } from '@/stores/icpStore';
+import { useScoringRules } from '@/hooks/useScoringRules';
+import { evaluateLeadAgainstRules } from '@/lib/rule-scoring-engine';
 import { ProspectScore, getTierFromScore, CriteriaScore, EnrichedCompany, ScoringMode, OutreachTone, OutreachBlock } from '@/types/icp';
+import { RuleBasedScore } from '@/types/scoring-rules';
 import { Target, User, Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,11 +27,13 @@ interface AIScoreResponse {
 
 export default function ScorePage() {
   const { criteria, addProspect, scoringMode } = useICPStore();
+  const { rules, settings } = useScoringRules();
   
   // Single mode state
   const [companyInfo, setCompanyInfo] = useState('');
   const [isScoring, setIsScoring] = useState(false);
   const [result, setResult] = useState<ProspectScore | null>(null);
+  const [ruleBasedScore, setRuleBasedScore] = useState<RuleBasedScore | null>(null);
   const [enrichedData, setEnrichedData] = useState<EnrichedCompany | null>(null);
   
   // Batch mode state
@@ -100,6 +105,18 @@ export default function ScorePage() {
     try {
       const prospect = await scoreCompany(companyInfo, tone);
       setResult(prospect);
+      
+      // Calculate rule-based score if enabled and rules exist
+      if (settings?.rule_based_enabled && rules.length > 0 && prospect) {
+        const ruleScore = evaluateLeadAgainstRules(
+          { enrichedData: enrichedData || undefined },
+          rules,
+          settings.qualification_threshold
+        );
+        setRuleBasedScore(ruleScore);
+      } else {
+        setRuleBasedScore(null);
+      }
     } catch (err) {
       console.error('Scoring error:', err);
       toast({
@@ -194,8 +211,21 @@ export default function ScorePage() {
   const handleResetSingle = () => {
     setCompanyInfo('');
     setResult(null);
+    setRuleBasedScore(null);
     setEnrichedData(null);
   };
+
+  // Recalculate rule score when enriched data changes
+  useEffect(() => {
+    if (enrichedData && settings?.rule_based_enabled && rules.length > 0) {
+      const ruleScore = evaluateLeadAgainstRules(
+        { enrichedData },
+        rules,
+        settings.qualification_threshold
+      );
+      setRuleBasedScore(ruleScore);
+    }
+  }, [enrichedData, rules, settings]);
 
   const handleResetBatch = () => {
     setBatchInput('');
@@ -275,7 +305,12 @@ export default function ScorePage() {
       <AnimatePresence mode="wait">
         {isScoring && <ScoringLoader key="single-loading" />}
         {result && !isScoring && (
-          <ScoreResult key="single-result" result={result} onSave={handleSaveSingle} />
+          <ScoreResult 
+            key="single-result" 
+            result={result} 
+            ruleBasedScore={ruleBasedScore}
+            onSave={handleSaveSingle} 
+          />
         )}
       </AnimatePresence>
 

@@ -3,7 +3,9 @@ import { Button } from '@/components/ui/button';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { SignalBreakdown } from '@/components/SignalBreakdown';
 import { OutreachBlock } from '@/components/OutreachBlock';
+import { RuleScoreDisplay } from '@/components/scoring-rules/RuleScoreDisplay';
 import { ProspectScore, OutreachTone, OutreachBlock as OutreachBlockType } from '@/types/icp';
+import { RuleBasedScore } from '@/types/scoring-rules';
 import { Save } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -11,11 +13,12 @@ import { useState } from 'react';
 
 interface ScoreResultProps {
   result: ProspectScore;
+  ruleBasedScore?: RuleBasedScore | null;
   onSave: () => void;
   onUpdateOutreach?: (outreach: OutreachBlockType, tone: OutreachTone) => void;
 }
 
-export function ScoreResult({ result, onSave, onUpdateOutreach }: ScoreResultProps) {
+export function ScoreResult({ result, ruleBasedScore, onSave, onUpdateOutreach }: ScoreResultProps) {
   const [currentOutreach, setCurrentOutreach] = useState(result.outreach);
   const [currentTone, setCurrentTone] = useState(result.outreachTone);
 
@@ -81,6 +84,11 @@ export function ScoreResult({ result, onSave, onUpdateOutreach }: ScoreResultPro
           </Button>
         </motion.div>
       </div>
+
+      {/* Rule-Based Score Display */}
+      {ruleBasedScore && ruleBasedScore.matchedRules.length > 0 && (
+        <RuleScoreDisplay score={ruleBasedScore} />
+      )}
 
       {/* Signal Breakdown - Receipt Style */}
       <SignalBreakdown 

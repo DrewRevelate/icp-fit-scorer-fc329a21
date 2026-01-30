@@ -14,6 +14,123 @@ export type Database = {
   }
   public: {
     Tables: {
+      historical_deals: {
+        Row: {
+          closed_at: string
+          company_name: string
+          company_size: string | null
+          created_at: string
+          days_to_close: number | null
+          deal_value: number | null
+          engagement_score: number | null
+          funding_stage: string | null
+          id: string
+          industry: string | null
+          job_title: string | null
+          outcome: string
+          region: string | null
+          source_channel: string | null
+        }
+        Insert: {
+          closed_at?: string
+          company_name: string
+          company_size?: string | null
+          created_at?: string
+          days_to_close?: number | null
+          deal_value?: number | null
+          engagement_score?: number | null
+          funding_stage?: string | null
+          id?: string
+          industry?: string | null
+          job_title?: string | null
+          outcome: string
+          region?: string | null
+          source_channel?: string | null
+        }
+        Update: {
+          closed_at?: string
+          company_name?: string
+          company_size?: string | null
+          created_at?: string
+          days_to_close?: number | null
+          deal_value?: number | null
+          engagement_score?: number | null
+          funding_stage?: string | null
+          id?: string
+          industry?: string | null
+          job_title?: string | null
+          outcome?: string
+          region?: string | null
+          source_channel?: string | null
+        }
+        Relationships: []
+      }
+      predictive_model_state: {
+        Row: {
+          accuracy_score: number | null
+          created_at: string
+          error_message: string | null
+          feature_weights: Json
+          id: string
+          last_trained_at: string | null
+          lost_records: number
+          total_records: number
+          training_status: string | null
+          updated_at: string
+          won_records: number
+        }
+        Insert: {
+          accuracy_score?: number | null
+          created_at?: string
+          error_message?: string | null
+          feature_weights?: Json
+          id?: string
+          last_trained_at?: string | null
+          lost_records?: number
+          total_records?: number
+          training_status?: string | null
+          updated_at?: string
+          won_records?: number
+        }
+        Update: {
+          accuracy_score?: number | null
+          created_at?: string
+          error_message?: string | null
+          feature_weights?: Json
+          id?: string
+          last_trained_at?: string | null
+          lost_records?: number
+          total_records?: number
+          training_status?: string | null
+          updated_at?: string
+          won_records?: number
+        }
+        Relationships: []
+      }
+      predictive_settings: {
+        Row: {
+          created_at: string
+          id: string
+          min_deals_threshold: number
+          predictive_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          min_deals_threshold?: number
+          predictive_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          min_deals_threshold?: number
+          predictive_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       scoring_rules: {
         Row: {
           category: Database["public"]["Enums"]["rule_category"]

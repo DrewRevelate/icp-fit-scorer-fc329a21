@@ -12,9 +12,12 @@ interface ICPCriteria {
   description: string;
 }
 
+type ScoringMode = 'standard' | 'advanced';
+
 interface ScoreRequest {
   companyInfo: string;
   criteria: ICPCriteria[];
+  scoringMode?: ScoringMode;
 }
 
 serve(async (req) => {
@@ -29,7 +32,7 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const { companyInfo, criteria } = await req.json() as ScoreRequest;
+    const { companyInfo, criteria, scoringMode = 'standard' } = await req.json() as ScoreRequest;
 
     if (!companyInfo || !criteria || criteria.length === 0) {
       return new Response(
@@ -38,7 +41,39 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `You are an ICP (Ideal Customer Profile) scoring expert for B2B sales. You analyze company information and score them against specific criteria.
+    const isAdvanced = scoringMode === 'advanced';
+
+    // Different prompts for different scoring modes
+    const systemPrompt = isAdvanced 
+      ? `You are an ICP (Ideal Customer Profile) scoring expert for B2B sales using the GTM Partners framework.
+
+You will analyze company information and score them using ONLY these discrete values: -5, -3, -1, +1, +3, +5
+
+Scoring Guidelines (GTM Partners Framework):
+- +5: Perfect fit. This is exactly what we're looking for.
+- +3: Strong fit. Meets criteria with minor gaps.
+- +1: Slight positive. Some alignment but not strong.
+- -1: Slight negative. Minor misalignment with criteria.
+- -3: Poor fit. Significant gaps or concerns.
+- -5: Disqualifying. Complete misalignment or red flag.
+
+IMPORTANT: You MUST use only these 6 values. No zeros, no in-between scores. Force a clear decision.
+
+Also extract the company name and generate a personalized cold outreach opening line.
+
+Respond ONLY with valid JSON in this exact format:
+{
+  "companyName": "extracted company name",
+  "criteriaScores": [
+    {
+      "criteriaId": "criterion id",
+      "advancedScore": -5 or -3 or -1 or 1 or 3 or 5,
+      "reasoning": "brief explanation of why this score"
+    }
+  ],
+  "openingLine": "personalized cold outreach opening line"
+}`
+      : `You are an ICP (Ideal Customer Profile) scoring expert for B2B sales. You analyze company information and score them against specific criteria.
 
 You will receive company information and a list of scoring criteria with their weights. For each criterion, provide:
 1. A score from 0 to the maximum weight (the weight is the max score for that criterion)
@@ -61,7 +96,17 @@ Respond ONLY with valid JSON in this exact format:
   "openingLine": "personalized cold outreach opening line"
 }`;
 
-    const userPrompt = `Analyze this company and score against the ICP criteria:
+    const userPrompt = isAdvanced
+      ? `Analyze this company using the GTM Partners -5 to +5 framework:
+
+COMPANY INFORMATION:
+${companyInfo}
+
+SCORING CRITERIA (score each from -5 to +5, using ONLY: -5, -3, -1, +1, +3, +5):
+${criteria.map(c => `- ${c.name} (ID: ${c.id}): ${c.description}`).join('\n')}
+
+Return the JSON response with GTM Partners scores (-5 to +5) for each criterion.`
+      : `Analyze this company and score against the ICP criteria:
 
 COMPANY INFORMATION:
 ${companyInfo}
@@ -71,7 +116,7 @@ ${criteria.map(c => `- ${c.name} (ID: ${c.id}, Max Score: ${c.weight}): ${c.desc
 
 Return the JSON response with scores for each criterion and a personalized opening line.`;
 
-    console.log("Calling Lovable AI Gateway for ICP scoring...");
+    console.log(`Calling Lovable AI Gateway for ICP scoring (${scoringMode} mode)...`);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -128,31 +173,54 @@ Return the JSON response with scores for each criterion and a personalized openi
     }
 
     // Build the full response with criteria details
+    let totalScore: number;
     const criteriaBreakdown = criteria.map(c => {
       const scoreData = parsedResult.criteriaScores?.find(
         (s: { criteriaId: string }) => s.criteriaId === c.id
       );
-      return {
-        criteriaId: c.id,
-        criteriaName: c.name,
-        score: Math.min(scoreData?.score ?? 0, c.weight),
-        maxScore: c.weight,
-        weight: c.weight,
-        reasoning: scoreData?.reasoning ?? "Analysis not available",
-        icon: getIconForCriteria(c.id),
-      };
+      
+      if (isAdvanced) {
+        // Advanced mode: use -5 to +5 scores
+        const advancedScore = scoreData?.advancedScore ?? 1;
+        // Normalize to 0-weight scale for compatibility: (-5 to +5) -> (0 to weight)
+        // -5 = 0, +5 = weight
+        const normalizedScore = Math.round(((advancedScore + 5) / 10) * c.weight);
+        
+        return {
+          criteriaId: c.id,
+          criteriaName: c.name,
+          score: normalizedScore,
+          maxScore: c.weight,
+          weight: c.weight,
+          reasoning: scoreData?.reasoning ?? "Analysis not available",
+          icon: getIconForCriteria(c.id),
+          advancedScore: advancedScore,
+        };
+      } else {
+        // Standard mode: 0 to weight
+        return {
+          criteriaId: c.id,
+          criteriaName: c.name,
+          score: Math.min(scoreData?.score ?? 0, c.weight),
+          maxScore: c.weight,
+          weight: c.weight,
+          reasoning: scoreData?.reasoning ?? "Analysis not available",
+          icon: getIconForCriteria(c.id),
+        };
+      }
     });
 
-    const totalScore = criteriaBreakdown.reduce((sum, c) => sum + c.score, 0);
+    totalScore = criteriaBreakdown.reduce((sum, c) => sum + c.score, 0);
 
     const result = {
       companyName: parsedResult.companyName || "Unknown Company",
       totalScore,
       criteriaBreakdown,
       openingLine: parsedResult.openingLine || "I'd love to connect and share how we can help your team.",
+      scoringMode,
     };
 
-    console.log("Scoring complete. Total score:", totalScore);
+    console.log(`Scoring complete (${scoringMode}). Total score:`, totalScore);
 
     return new Response(JSON.stringify(result), {
       status: 200,

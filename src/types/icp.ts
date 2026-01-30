@@ -1,3 +1,5 @@
+export type ScoringMode = 'standard' | 'advanced';
+
 export interface ICPCriteria {
   id: string;
   name: string;
@@ -6,15 +8,23 @@ export interface ICPCriteria {
   description: string;
 }
 
+// Standard mode: 0 to maxScore
+// Advanced mode: -5, -3, -1, +1, +3, +5 (GTM Partners framework)
 export interface CriteriaScore {
   criteriaId: string;
   criteriaName: string;
-  score: number;
-  maxScore: number;
+  score: number;        // In standard: 0 to maxScore. In advanced: -5 to +5
+  maxScore: number;     // In standard: weight. In advanced: 5
   weight: number;
   reasoning: string;
   icon: string;
+  // Advanced mode specific
+  advancedScore?: -5 | -3 | -1 | 1 | 3 | 5;
 }
+
+// Valid advanced scores following GTM Partners framework
+export const ADVANCED_SCORES = [-5, -3, -1, 1, 3, 5] as const;
+export type AdvancedScoreValue = typeof ADVANCED_SCORES[number];
 
 export type Tier = 'A' | 'B' | 'C' | 'D';
 

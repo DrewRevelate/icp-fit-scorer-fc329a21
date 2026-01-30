@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { ICPCriteria, ProspectScore, DEFAULT_CRITERIA, getTierFromScore } from '@/types/icp';
+import { ICPCriteria, ProspectScore, DEFAULT_CRITERIA, getTierFromScore, ScoringMode } from '@/types/icp';
 
 interface ICPStore {
   criteria: ICPCriteria[];
   prospects: ProspectScore[];
+  scoringMode: ScoringMode;
   setCriteria: (criteria: ICPCriteria[]) => void;
   updateCriteriaWeight: (id: string, weight: number) => void;
+  setScoringMode: (mode: ScoringMode) => void;
   addProspect: (prospect: ProspectScore) => void;
   removeProspect: (id: string) => void;
   clearProspects: () => void;
@@ -33,6 +35,7 @@ export const useICPStore = create<ICPStore>()(
     (set) => ({
       criteria: DEFAULT_CRITERIA,
       prospects: [],
+      scoringMode: 'standard' as ScoringMode,
       setCriteria: (criteria) => set({ criteria }),
       updateCriteriaWeight: (id, weight) =>
         set((state) => ({
@@ -40,6 +43,7 @@ export const useICPStore = create<ICPStore>()(
             c.id === id ? { ...c, weight } : c
           ),
         })),
+      setScoringMode: (mode) => set({ scoringMode: mode }),
       addProspect: (prospect) =>
         set((state) => ({
           prospects: [prospect, ...state.prospects],

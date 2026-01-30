@@ -2,3 +2,6 @@ project_id = "dqqvbwcoibvifxkuhaua"
 
 [functions.score-prospect]
 verify_jwt = false
+
+[functions.enrich-company]
+verify_jwt = false

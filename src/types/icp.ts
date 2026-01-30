@@ -149,3 +149,17 @@ export function getScoreLabel(category: ScoreCategory): string {
       return 'Strong Fit';
   }
 }
+
+// Enriched company data from URL scraping
+export interface EnrichedCompany {
+  companyName: string;
+  description: string;
+  industry: string;
+  companySize: string;
+  estimatedRevenue: string;
+  fundingStage: string;
+  techStack: string[];
+  region: string;
+  website: string;
+  rawContent: string;
+}

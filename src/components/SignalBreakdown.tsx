@@ -138,22 +138,20 @@ export function SignalBreakdown({ breakdown, totalScore, scoringMode }: SignalBr
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="glass-card overflow-hidden"
+      className="fluid-section"
     >
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-border/50 bg-secondary/30">
-        <div className="flex items-center justify-between">
-          <h3 className="font-display text-lg font-semibold text-foreground">
-            Signal Breakdown
-          </h3>
-          <span className="text-xs text-muted-foreground font-mono">
-            {isAdvanced ? 'GTM PARTNERS FRAMEWORK' : 'SCORING RECEIPT'}
-          </span>
-        </div>
+      {/* Header - minimal, no box */}
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="font-display text-xl font-semibold text-foreground">
+          Signal Breakdown
+        </h3>
+        <span className="section-label">
+          {isAdvanced ? 'GTM Partners' : 'Scoring Receipt'}
+        </span>
       </div>
       
-      {/* Signals */}
-      <div className="px-4 py-2">
+      {/* Signals - inline rows, no cards */}
+      <div className="space-y-0">
         {sortedBreakdown.map((criteria, index) => (
           <SignalRow 
             key={criteria.criteriaId} 
@@ -164,33 +162,32 @@ export function SignalBreakdown({ breakdown, totalScore, scoringMode }: SignalBr
         ))}
       </div>
       
-      {/* Total */}
-      <div className="px-4 py-3 border-t border-border bg-secondary/50">
-        <div className="flex items-center justify-between">
-          <span className="font-display text-sm font-semibold text-foreground">
-            {isAdvanced ? 'Net Score' : 'Total Score'}
-          </span>
-          <div className="flex items-center gap-2">
-            {isAdvanced && advancedTotal !== null ? (
-              <>
-                <span className={`font-mono text-lg font-bold ${advancedTotal >= 0 ? 'text-success' : 'text-destructive'}`}>
-                  {advancedTotal > 0 ? '+' : ''}{advancedTotal}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  (max +{advancedMax})
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="font-mono text-lg font-bold text-primary">
-                  {totalScore}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  / {maxPossible}
-                </span>
-              </>
-            )}
-          </div>
+      {/* Total - subtle divider, not boxed */}
+      <div className="organic-divider" />
+      <div className="flex items-center justify-between">
+        <span className="font-display text-sm font-semibold text-foreground">
+          {isAdvanced ? 'Net Score' : 'Total Score'}
+        </span>
+        <div className="flex items-center gap-2">
+          {isAdvanced && advancedTotal !== null ? (
+            <>
+              <span className={`font-mono text-xl font-bold ${advancedTotal >= 0 ? 'text-success' : 'text-destructive'}`}>
+                {advancedTotal > 0 ? '+' : ''}{advancedTotal}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                (max +{advancedMax})
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="font-mono text-xl font-bold text-primary">
+                {totalScore}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                / {maxPossible}
+              </span>
+            </>
+          )}
         </div>
       </div>
     </motion.div>

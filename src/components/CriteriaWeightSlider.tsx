@@ -35,14 +35,14 @@ export function CriteriaWeightSlider({
 
   return (
     <motion.div
-      className="glass-card p-5"
+      className="py-5 border-b border-border/30 last:border-0 hover-highlight rounded-xl"
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.05 * index, duration: 0.4 }}
     >
       <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-          <Icon className="h-6 w-6 text-primary" />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <Icon className="h-5 w-5 text-primary" />
         </div>
         
         <div className="flex-1">

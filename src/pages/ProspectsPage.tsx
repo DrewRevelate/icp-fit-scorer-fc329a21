@@ -227,14 +227,16 @@ export default function ProspectsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-center py-20 fluid-card"
+              className="text-center py-20"
             >
-              <Users className="h-16 w-16 text-muted-foreground/30 mx-auto mb-6" />
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-secondary/30 mx-auto mb-6">
+                <Users className="h-10 w-10 text-muted-foreground/50" />
+              </div>
               <h3 className="text-2xl font-semibold text-foreground mb-3">No Prospects Yet</h3>
               <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
                 Start scoring companies to build your prospect list.
               </p>
-              <Button asChild className="bg-primary hover:bg-primary/90 rounded-xl px-6">
+              <Button asChild className="bg-primary hover:bg-primary/90 rounded-full px-8">
                 <a href="/">Score Your First Prospect</a>
               </Button>
             </motion.div>
@@ -262,14 +264,16 @@ export default function ProspectsPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center py-20 fluid-card"
+              className="text-center py-20"
             >
-              <TrendingUp className="h-16 w-16 text-muted-foreground/30 mx-auto mb-6" />
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-secondary/30 mx-auto mb-6">
+                <TrendingUp className="h-10 w-10 text-muted-foreground/50" />
+              </div>
               <h3 className="text-2xl font-semibold text-foreground mb-3">Engagement Scoring Disabled</h3>
               <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
                 Enable engagement scoring in Settings, then Engage to track lead activity.
               </p>
-              <Button asChild className="bg-primary hover:bg-primary/90 rounded-xl px-6">
+              <Button asChild className="bg-primary hover:bg-primary/90 rounded-full px-8">
                 <a href="/setup">Go to Settings</a>
               </Button>
             </motion.div>

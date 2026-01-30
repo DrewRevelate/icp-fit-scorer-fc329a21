@@ -85,8 +85,8 @@ export function BatchResults({
         )}
       </div>
 
-      {/* Results List */}
-      <div className="space-y-2">
+      {/* Results List - flowing rows, no cards */}
+      <div className="space-y-0">
         {sortedResults.map((prospect, index) => {
           const colors = tierColors[prospect.tier];
           const TierIcon = tierIcons[prospect.tier];
@@ -97,13 +97,13 @@ export function BatchResults({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="glass-card overflow-hidden"
+              className="relative"
             >
               <div
-                className="flex items-center gap-4 p-4 cursor-pointer hover:bg-secondary/30 transition-colors"
+                className="inline-row cursor-pointer group"
                 onClick={() => setExpandedId(expandedId === prospect.id ? null : prospect.id)}
               >
-                <div className={`flex items-center justify-center h-10 w-10 rounded-lg ${colors.bg}`}>
+                <div className={`flex items-center justify-center h-10 w-10 rounded-xl ${colors.bg}`}>
                   <span className={`font-display text-xl font-bold ${colors.text}`}>
                     {prospect.tier}
                   </span>
@@ -130,7 +130,7 @@ export function BatchResults({
                     e.stopPropagation();
                     onSaveOne(prospect);
                   }}
-                  className="text-primary hover:text-primary/80"
+                  className="text-primary hover:text-primary/80 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <Save className="h-4 w-4" />
                 </Button>
@@ -147,10 +147,10 @@ export function BatchResults({
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
-                  className="border-t border-border/50 bg-secondary/20 p-4 space-y-3"
+                  className="pl-14 pr-4 pb-6 space-y-4"
                 >
-                  {/* Receipt-style signal breakdown */}
-                  <div className="space-y-1">
+                  {/* Signal breakdown - flowing list */}
+                  <div className="pt-4 space-y-0">
                     {[...prospect.criteriaBreakdown]
                       .sort((a, b) => (b.score / b.maxScore) - (a.score / a.maxScore))
                       .map((criteria) => {
@@ -167,7 +167,7 @@ export function BatchResults({
                         return (
                           <div
                             key={criteria.criteriaId}
-                            className="flex items-center justify-between py-2 border-b border-border/30 last:border-0"
+                            className="flex items-center justify-between py-3 border-b border-border/30 last:border-0"
                           >
                             <div className="flex-1 min-w-0">
                               <span className="text-sm font-medium text-foreground">{criteria.criteriaName}</span>
@@ -182,9 +182,10 @@ export function BatchResults({
                       })}
                   </div>
 
-                  <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
-                    <p className="text-xs text-muted-foreground mb-1">Opening Line:</p>
-                    <p className="text-sm italic">"{prospect.openingLine}"</p>
+                  {/* Opening line - subtle, no card */}
+                  <div className="pt-2">
+                    <p className="text-xs text-muted-foreground mb-1">Opening Line</p>
+                    <p className="text-sm italic text-foreground">"{prospect.openingLine}"</p>
                   </div>
                 </motion.div>
               )}
@@ -192,16 +193,16 @@ export function BatchResults({
           );
         })}
 
-        {/* Failed Companies */}
+        {/* Failed Companies - inline, subtle */}
         {failedCompanies.map((company, index) => (
           <motion.div
             key={`failed-${index}`}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: (results.length + index) * 0.05 }}
-            className="flex items-center gap-4 p-4 glass-card opacity-60"
+            className="inline-row opacity-50"
           >
-            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-destructive/15">
+            <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-destructive/15">
               <XCircle className="h-5 w-5 text-destructive" />
             </div>
             <div className="flex-1 min-w-0">

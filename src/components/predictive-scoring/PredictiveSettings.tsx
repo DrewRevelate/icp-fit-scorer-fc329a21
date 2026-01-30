@@ -261,21 +261,21 @@ export function PredictiveSettings() {
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 rounded-lg bg-secondary/20 border border-border/50">
               <p className="font-medium text-foreground mb-1">Attributes Analyzed</p>
-              <ul className="text-xs space-y-1">
-                <li>• Industry & Company Size</li>
-                <li>• Job Title / Seniority</li>
-                <li>• Source Channel</li>
-                <li>• Funding Stage & Region</li>
-                <li>• Engagement Score</li>
+              <ul className="text-xs space-y-1.5">
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-primary/60" />Industry & Company Size</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-primary/60" />Job Title / Seniority</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-primary/60" />Source Channel</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-primary/60" />Funding Stage & Region</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-primary/60" />Engagement Score</li>
               </ul>
             </div>
             <div className="p-3 rounded-lg bg-secondary/20 border border-border/50">
               <p className="font-medium text-foreground mb-1">Output</p>
-              <ul className="text-xs space-y-1">
-                <li>• 0-100% conversion probability</li>
-                <li>• Confidence level indicator</li>
-                <li>• Factor-by-factor breakdown</li>
-                <li>• Positive/negative signals</li>
+              <ul className="text-xs space-y-1.5">
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-accent/60" />0-100% conversion probability</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-accent/60" />Confidence level indicator</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-accent/60" />Factor-by-factor breakdown</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-accent/60" />Positive/negative signals</li>
               </ul>
             </div>
           </div>

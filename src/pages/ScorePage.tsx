@@ -242,11 +242,6 @@ export default function ScorePage() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center space-y-4"
       >
-        <div className="flex justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 glow-effect">
-            <Target className="h-8 w-8 text-primary" />
-          </div>
-        </div>
         <h1 className="text-4xl font-bold gradient-text">Score Prospects</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           Analyze companies and assign them to Tier A, B, C, or D based on your ICP criteria.

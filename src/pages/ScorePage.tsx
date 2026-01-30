@@ -6,80 +6,16 @@ import { ScoreGauge } from '@/components/ScoreGauge';
 import { CriteriaCard } from '@/components/CriteriaCard';
 import { OpeningLineCard } from '@/components/OpeningLineCard';
 import { useICPStore } from '@/stores/icpStore';
-import { ProspectScore, getScoreCategory } from '@/types/icp';
+import { ProspectScore, getScoreCategory, CriteriaScore } from '@/types/icp';
 import { Target, Sparkles, Save, RotateCcw, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
-// Mock AI scoring function - will be replaced with actual AI
-function generateMockScore(companyInfo: string, criteria: any[]): ProspectScore {
-  const companyName = companyInfo.split('\n')[0].split(' ').slice(0, 3).join(' ') || 'Unknown Company';
-  
-  const criteriaBreakdown = criteria.map((c) => {
-    const maxScore = c.weight;
-    const score = Math.floor(Math.random() * (maxScore * 0.6)) + Math.floor(maxScore * 0.4);
-    
-    const reasonings: Record<string, string[]> = {
-      'company-size': [
-        'Team size aligns well with target segment',
-        'Company is slightly larger than ideal range',
-        'Perfect match for mid-market focus'
-      ],
-      'industry': [
-        'Strong fit in B2B SaaS vertical',
-        'Adjacent industry with transferable use cases',
-        'Core target industry identified'
-      ],
-      'revenue': [
-        'Revenue range indicates healthy growth',
-        'Budget capacity matches pricing tier',
-        'Funding suggests expansion capability'
-      ],
-      'tech-stack': [
-        'Modern tech stack with integration potential',
-        'Uses complementary technologies',
-        'Tech-forward organization'
-      ],
-      'funding-stage': [
-        'Series B indicates scaling phase',
-        'Well-funded with growth mandate',
-        'Appropriate funding stage for solutions'
-      ],
-      'region': [
-        'Primary market region',
-        'Timezone-friendly for support',
-        'Strong market presence in region'
-      ]
-    };
-
-    return {
-      criteriaId: c.id,
-      criteriaName: c.name,
-      score,
-      maxScore,
-      weight: c.weight,
-      reasoning: reasonings[c.id]?.[Math.floor(Math.random() * 3)] || 'Analysis complete',
-      icon: c.icon,
-    };
-  });
-
-  const totalScore = criteriaBreakdown.reduce((sum, c) => sum + c.score, 0);
-
-  const openingLines = [
-    `Hi! I noticed ${companyName} has been scaling rapidly in the B2B space. Given your focus on operational efficiency, I thought you might find value in how we've helped similar companies reduce manual workflows by 60%.`,
-    `I've been following ${companyName}'s growth journey - impressive traction! Companies at your stage often face challenges around [specific pain point]. Would love to share how we've solved this for others in your space.`,
-    `Congrats on the recent milestones at ${companyName}! Based on your tech stack and team size, I believe there's a strong fit for our solution. Mind if I share a quick 2-minute overview?`,
-  ];
-
-  return {
-    id: crypto.randomUUID(),
-    companyName,
-    companyDescription: companyInfo,
-    totalScore,
-    scoreCategory: getScoreCategory(totalScore),
-    criteriaBreakdown,
-    openingLine: openingLines[Math.floor(Math.random() * openingLines.length)],
-    createdAt: new Date().toISOString(),
-  };
+interface AIScoreResponse {
+  companyName: string;
+  totalScore: number;
+  criteriaBreakdown: CriteriaScore[];
+  openingLine: string;
 }
 
 export default function ScorePage() {
@@ -101,12 +37,49 @@ export default function ScorePage() {
     setIsScoring(true);
     setResult(null);
 
-    // Simulate AI processing time
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const { data, error } = await supabase.functions.invoke<AIScoreResponse>('score-prospect', {
+        body: { 
+          companyInfo, 
+          criteria: criteria.map(c => ({
+            id: c.id,
+            name: c.name,
+            weight: c.weight,
+            description: c.description,
+          }))
+        },
+      });
 
-    const score = generateMockScore(companyInfo, criteria);
-    setResult(score);
-    setIsScoring(false);
+      if (error) {
+        throw new Error(error.message || 'Failed to score prospect');
+      }
+
+      if (!data) {
+        throw new Error('No data returned from scoring');
+      }
+
+      const prospect: ProspectScore = {
+        id: crypto.randomUUID(),
+        companyName: data.companyName,
+        companyDescription: companyInfo,
+        totalScore: data.totalScore,
+        scoreCategory: getScoreCategory(data.totalScore),
+        criteriaBreakdown: data.criteriaBreakdown,
+        openingLine: data.openingLine,
+        createdAt: new Date().toISOString(),
+      };
+
+      setResult(prospect);
+    } catch (err) {
+      console.error('Scoring error:', err);
+      toast({
+        title: 'Scoring Failed',
+        description: err instanceof Error ? err.message : 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsScoring(false);
+    }
   };
 
   const handleSave = () => {
@@ -139,7 +112,7 @@ export default function ScorePage() {
         <h1 className="text-4xl font-bold gradient-text">Score a Prospect</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           Paste a company name, website, or description to instantly analyze 
-          their fit against your ICP criteria.
+          their fit against your ICP criteria using AI.
         </p>
       </motion.div>
 
@@ -211,7 +184,7 @@ Tech stack: React, Node.js, AWS"
                 <Loader2 className="h-12 w-12 text-primary animate-spin" />
               </div>
             </div>
-            <p className="mt-6 text-muted-foreground">Analyzing company fit...</p>
+            <p className="mt-6 text-muted-foreground">AI is analyzing company fit...</p>
           </motion.div>
         )}
 

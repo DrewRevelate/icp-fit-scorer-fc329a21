@@ -13,19 +13,23 @@ export function AppHeader() {
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur-xl">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <header className="sticky top-4 z-50 mx-4 sm:mx-8 lg:mx-12">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between px-6 py-3 rounded-2xl bg-card/60 backdrop-blur-xl border border-border/30 shadow-lg"
+      >
         <Link to="/" className="flex items-center gap-2">
           <motion.img
             src={fitchLogo}
             alt="Fitch"
-            className="h-10 w-auto"
+            className="h-9 w-auto"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           />
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-1 bg-secondary/40 rounded-xl p-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -33,10 +37,10 @@ export function AppHeader() {
             return (
               <Link key={item.path} to={item.path}>
                 <motion.div
-                  className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ${
                     isActive
-                      ? 'bg-primary/15 text-primary'
-                      : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                      ? 'bg-primary/20 text-primary shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -48,7 +52,7 @@ export function AppHeader() {
             );
           })}
         </nav>
-      </div>
+      </motion.div>
     </header>
   );
 }

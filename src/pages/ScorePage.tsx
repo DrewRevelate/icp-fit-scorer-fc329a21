@@ -236,32 +236,44 @@ export default function ScorePage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-12">
+      {/* Hero section - flowing, no box */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-4"
+        className="text-center space-y-6 pt-4"
       >
-        <h1 className="text-4xl font-bold gradient-text">Score Prospects</h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Analyze companies and assign them to Tier A, B, C, or D based on your ICP criteria.
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="inline-block"
+        >
+          <span className="section-label">AI-Powered Analysis</span>
+        </motion.div>
+        <h1 className="text-5xl sm:text-6xl font-bold gradient-text leading-tight">
+          Score Prospects
+        </h1>
+        <p className="text-muted-foreground max-w-xl mx-auto text-lg leading-relaxed">
+          Analyze companies and assign them to tiers based on your ICP criteria.
           Get clear action recommendations for each prospect.
         </p>
       </motion.div>
 
+      {/* Main input card - fluid design */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass-card p-6"
+        className="fluid-card p-8"
       >
-        <Tabs defaultValue="single" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-            <TabsTrigger value="single" className="gap-2">
+        <Tabs defaultValue="single" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto bg-secondary/30 p-1 rounded-xl">
+            <TabsTrigger value="single" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
               <User className="h-4 w-4" />
               Single
             </TabsTrigger>
-            <TabsTrigger value="batch" className="gap-2">
+            <TabsTrigger value="batch" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
               <Users className="h-4 w-4" />
               Batch
             </TabsTrigger>

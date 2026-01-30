@@ -20,9 +20,12 @@ const iconMap: Record<string, LucideIcon> = {
   Globe,
 };
 
+import { ScoringMode } from '@/types/icp';
+
 interface SignalBreakdownProps {
   breakdown: CriteriaScore[];
   totalScore: number;
+  scoringMode?: ScoringMode; // Pass mode from result instead of store
 }
 
 interface SignalRowProps {
@@ -108,9 +111,10 @@ function SignalRow({ criteria, index, isAdvanced }: SignalRowProps) {
   );
 }
 
-export function SignalBreakdown({ breakdown, totalScore }: SignalBreakdownProps) {
-  const { scoringMode } = useICPStore();
-  const isAdvanced = scoringMode === 'advanced';
+export function SignalBreakdown({ breakdown, totalScore, scoringMode }: SignalBreakdownProps) {
+  const store = useICPStore();
+  // Use passed scoringMode if available, otherwise fall back to store
+  const isAdvanced = (scoringMode ?? store.scoringMode) === 'advanced';
   
   // Sort by score percentage (best matches first)
   const sortedBreakdown = [...breakdown].sort((a, b) => {

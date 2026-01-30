@@ -121,6 +121,7 @@ export interface ProspectScore {
   openingLine: string; // Legacy compatibility
   outreach?: OutreachBlock; // Full outreach block
   outreachTone?: OutreachTone; // Tone used for outreach
+  scoringMode?: ScoringMode; // Mode used for scoring
   createdAt: string;
 }
 

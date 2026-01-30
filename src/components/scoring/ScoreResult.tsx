@@ -43,7 +43,8 @@ export function ScoreResult({ result, onSave }: ScoreResultProps) {
       {/* Signal Breakdown - Receipt Style */}
       <SignalBreakdown 
         breakdown={result.criteriaBreakdown} 
-        totalScore={result.totalScore} 
+        totalScore={result.totalScore}
+        scoringMode={result.scoringMode}
       />
 
       {/* Full Outreach Block */}

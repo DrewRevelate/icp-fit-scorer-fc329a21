@@ -79,6 +79,7 @@ export default function ScorePage() {
       openingLine: data.openingLine,
       outreach: data.outreach,
       outreachTone: data.outreachTone,
+      scoringMode: scoringMode, // Store the mode used
       createdAt: new Date().toISOString(),
     };
   };

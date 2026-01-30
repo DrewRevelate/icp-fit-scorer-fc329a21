@@ -15,16 +15,18 @@ import {
 import { Users, Search, GitCompare, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-type SortField = 'score' | 'date' | 'name';
+type SortField = 'tier' | 'score' | 'date' | 'name';
 type SortOrder = 'asc' | 'desc';
 
 export default function ProspectsPage() {
   const { prospects, removeProspect, clearProspects } = useICPStore();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<SortField>('date');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [sortField, setSortField] = useState<SortField>('tier');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+
+  const tierOrder = { A: 0, B: 1, C: 2, D: 3 };
 
   const filteredProspects = prospects
     .filter((p) =>
@@ -34,6 +36,10 @@ export default function ProspectsPage() {
     .sort((a, b) => {
       let comparison = 0;
       switch (sortField) {
+        case 'tier':
+          comparison = tierOrder[a.tier] - tierOrder[b.tier];
+          if (comparison === 0) comparison = b.totalScore - a.totalScore;
+          break;
         case 'score':
           comparison = a.totalScore - b.totalScore;
           break;
@@ -127,6 +133,7 @@ export default function ProspectsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="tier">Tier</SelectItem>
                   <SelectItem value="date">Date</SelectItem>
                   <SelectItem value="score">Score</SelectItem>
                   <SelectItem value="name">Name</SelectItem>

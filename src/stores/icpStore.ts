@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { ICPCriteria, ProspectScore, DEFAULT_CRITERIA } from '@/types/icp';
+import { ICPCriteria, ProspectScore, DEFAULT_CRITERIA, getTierFromScore } from '@/types/icp';
 
 interface ICPStore {
   criteria: ICPCriteria[];
@@ -10,6 +10,22 @@ interface ICPStore {
   addProspect: (prospect: ProspectScore) => void;
   removeProspect: (id: string) => void;
   clearProspects: () => void;
+}
+
+// Migration function for legacy data
+function migrateProspect(prospect: any): ProspectScore {
+  // If it already has tier info, return as-is
+  if (prospect.tier && prospect.tierDefinition) {
+    return prospect;
+  }
+  
+  // Migrate from old scoreCategory format
+  const tierDef = getTierFromScore(prospect.totalScore);
+  return {
+    ...prospect,
+    tier: tierDef.tier,
+    tierDefinition: tierDef,
+  };
 }
 
 export const useICPStore = create<ICPStore>()(
@@ -36,6 +52,12 @@ export const useICPStore = create<ICPStore>()(
     }),
     {
       name: 'fitcheck-storage',
+      // Migrate legacy prospects on load
+      onRehydrateStorage: () => (state) => {
+        if (state?.prospects) {
+          state.prospects = state.prospects.map(migrateProspect);
+        }
+      },
     }
   )
 );

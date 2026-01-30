@@ -8,7 +8,7 @@ import { BatchResults } from '@/components/scoring/BatchResults';
 import { ScoreResult } from '@/components/scoring/ScoreResult';
 import { ScoringLoader } from '@/components/scoring/ScoringLoader';
 import { useICPStore } from '@/stores/icpStore';
-import { ProspectScore, getScoreCategory, CriteriaScore } from '@/types/icp';
+import { ProspectScore, getTierFromScore, CriteriaScore } from '@/types/icp';
 import { Target, User, Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -60,12 +60,15 @@ export default function ScorePage() {
       throw new Error(error?.message || 'Failed to score prospect');
     }
 
+    const tierDef = getTierFromScore(data.totalScore);
+
     return {
       id: crypto.randomUUID(),
       companyName: data.companyName,
       companyDescription: companyInfo,
       totalScore: data.totalScore,
-      scoreCategory: getScoreCategory(data.totalScore),
+      tier: tierDef.tier,
+      tierDefinition: tierDef,
       criteriaBreakdown: data.criteriaBreakdown,
       openingLine: data.openingLine,
       createdAt: new Date().toISOString(),
@@ -205,8 +208,8 @@ export default function ScorePage() {
         </div>
         <h1 className="text-4xl font-bold gradient-text">Score Prospects</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Analyze one company in detail or score multiple prospects at once 
-          against your ICP criteria using AI.
+          Analyze companies and assign them to Tier A, B, C, or D based on your ICP criteria.
+          Get clear action recommendations for each prospect.
         </p>
       </motion.div>
 

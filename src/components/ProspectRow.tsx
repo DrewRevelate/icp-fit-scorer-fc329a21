@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ProspectScore, getScoreLabel } from '@/types/icp';
-import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { ProspectScore, Tier } from '@/types/icp';
+import { ChevronDown, Trash2, Zap, TrendingUp, Clock, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { CriteriaCard } from './CriteriaCard';
 
@@ -13,6 +13,20 @@ interface ProspectRowProps {
   onToggleCompare?: () => void;
 }
 
+const tierColors: Record<Tier, { bg: string; text: string; border: string }> = {
+  A: { bg: 'bg-success/15', text: 'text-success', border: 'border-success/30' },
+  B: { bg: 'bg-primary/15', text: 'text-primary', border: 'border-primary/30' },
+  C: { bg: 'bg-warning/15', text: 'text-warning', border: 'border-warning/30' },
+  D: { bg: 'bg-destructive/15', text: 'text-destructive', border: 'border-destructive/30' },
+};
+
+const tierIcons: Record<Tier, typeof Zap> = {
+  A: Zap,
+  B: TrendingUp,
+  C: Clock,
+  D: XCircle,
+};
+
 export function ProspectRow({ 
   prospect, 
   onDelete, 
@@ -20,28 +34,8 @@ export function ProspectRow({
   onToggleCompare 
 }: ProspectRowProps) {
   const [expanded, setExpanded] = useState(false);
-
-  const getBadgeVariant = () => {
-    switch (prospect.scoreCategory) {
-      case 'poor':
-        return 'destructive';
-      case 'moderate':
-        return 'secondary';
-      case 'strong':
-        return 'default';
-    }
-  };
-
-  const getBadgeClass = () => {
-    switch (prospect.scoreCategory) {
-      case 'poor':
-        return 'bg-score-poor/20 text-score-poor border-score-poor/30';
-      case 'moderate':
-        return 'bg-score-moderate/20 text-score-moderate border-score-moderate/30';
-      case 'strong':
-        return 'bg-score-strong/20 text-score-strong border-score-strong/30';
-    }
-  };
+  const colors = tierColors[prospect.tier];
+  const TierIcon = tierIcons[prospect.tier];
 
   return (
     <motion.div
@@ -66,17 +60,25 @@ export function ProspectRow({
           />
         )}
         
+        {/* Tier Badge */}
+        <div className={`flex items-center justify-center h-10 w-10 rounded-lg ${colors.bg}`}>
+          <span className={`font-display text-xl font-bold ${colors.text}`}>
+            {prospect.tier}
+          </span>
+        </div>
+
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-foreground truncate">
             {prospect.companyName}
           </h3>
-          <p className="text-sm text-muted-foreground truncate">
-            {prospect.companyDescription.slice(0, 80)}...
+          <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+            <TierIcon className="h-3 w-3" />
+            {prospect.tierDefinition.action}
           </p>
         </div>
 
-        <Badge className={`${getBadgeClass()} border`}>
-          {prospect.totalScore} - {getScoreLabel(prospect.scoreCategory)}
+        <Badge className={`${colors.bg} ${colors.text} ${colors.border} border`}>
+          {prospect.totalScore}/100
         </Badge>
 
         <span className="text-xs text-muted-foreground hidden sm:block">

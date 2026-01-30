@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { ProspectScore, Tier } from '@/types/icp';
 import { ChevronDown, Trash2, Zap, TrendingUp, Clock, XCircle } from 'lucide-react';
 import { useState } from 'react';
-import { CriteriaCard } from './CriteriaCard';
 
 interface ProspectRowProps {
   prospect: ProspectScore;
@@ -110,15 +109,51 @@ export function ProspectRow({
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="border-t border-border/50 bg-secondary/20 p-4"
+          className="border-t border-border/50 bg-secondary/20 p-4 space-y-4"
         >
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {prospect.criteriaBreakdown.map((criteria, index) => (
-              <CriteriaCard key={criteria.criteriaId} criteria={criteria} index={index} />
-            ))}
+          {/* Receipt-style signal breakdown */}
+          <div className="glass-card overflow-hidden">
+            <div className="px-4 py-2 border-b border-border/50 bg-secondary/30">
+              <span className="text-xs text-muted-foreground font-mono">SIGNAL BREAKDOWN</span>
+            </div>
+            <div className="px-4 py-2">
+              {[...prospect.criteriaBreakdown]
+                .sort((a, b) => (b.score / b.maxScore) - (a.score / a.maxScore))
+                .map((criteria) => {
+                  const percentage = Math.round((criteria.score / criteria.maxScore) * 100);
+                  const isPoor = percentage < 40;
+                  const isModerate = percentage >= 40 && percentage < 70;
+                  
+                  const getColor = () => {
+                    if (isPoor) return 'text-destructive';
+                    if (isModerate) return 'text-warning';
+                    return 'text-success';
+                  };
+                  
+                  return (
+                    <div
+                      key={criteria.criteriaId}
+                      className="flex items-center justify-between py-2.5 border-b border-border/30 last:border-0"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium text-foreground">{criteria.criteriaName}</span>
+                        <p className="text-xs text-muted-foreground truncate">{criteria.reasoning}</p>
+                      </div>
+                      <div className={`font-mono text-sm font-semibold shrink-0 ml-3 ${getColor()}`}>
+                        {isPoor ? '−' : '+'}{criteria.score}
+                        <span className="text-muted-foreground font-normal">/{criteria.maxScore}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+            <div className="px-4 py-2 border-t border-border bg-secondary/50 flex justify-between items-center">
+              <span className="text-xs font-semibold">Total</span>
+              <span className="font-mono font-bold text-primary">{prospect.totalScore}/100</span>
+            </div>
           </div>
           
-          <div className="mt-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
+          <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
             <p className="text-sm text-muted-foreground mb-1">Opening Line:</p>
             <p className="text-foreground italic">"{prospect.openingLine}"</p>
           </div>

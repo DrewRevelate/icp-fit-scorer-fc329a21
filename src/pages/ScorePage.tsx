@@ -8,7 +8,7 @@ import { BatchResults } from '@/components/scoring/BatchResults';
 import { ScoreResult } from '@/components/scoring/ScoreResult';
 import { ScoringLoader } from '@/components/scoring/ScoringLoader';
 import { useICPStore } from '@/stores/icpStore';
-import { ProspectScore, getTierFromScore, CriteriaScore } from '@/types/icp';
+import { ProspectScore, getTierFromScore, CriteriaScore, EnrichedCompany } from '@/types/icp';
 import { Target, User, Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,6 +27,7 @@ export default function ScorePage() {
   const [companyInfo, setCompanyInfo] = useState('');
   const [isScoring, setIsScoring] = useState(false);
   const [result, setResult] = useState<ProspectScore | null>(null);
+  const [enrichedData, setEnrichedData] = useState<EnrichedCompany | null>(null);
   
   // Batch mode state
   const [batchInput, setBatchInput] = useState('');
@@ -185,6 +186,7 @@ export default function ScorePage() {
   const handleResetSingle = () => {
     setCompanyInfo('');
     setResult(null);
+    setEnrichedData(null);
   };
 
   const handleResetBatch = () => {
@@ -239,6 +241,8 @@ export default function ScorePage() {
               onReset={handleResetSingle}
               isScoring={isScoring}
               hasResult={!!result}
+              enrichedData={enrichedData}
+              onEnrichedData={setEnrichedData}
             />
           </TabsContent>
 

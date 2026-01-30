@@ -3,15 +3,57 @@ import { Button } from '@/components/ui/button';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { SignalBreakdown } from '@/components/SignalBreakdown';
 import { OutreachBlock } from '@/components/OutreachBlock';
-import { ProspectScore } from '@/types/icp';
+import { ProspectScore, OutreachTone, OutreachBlock as OutreachBlockType } from '@/types/icp';
 import { Save } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 interface ScoreResultProps {
   result: ProspectScore;
   onSave: () => void;
+  onUpdateOutreach?: (outreach: OutreachBlockType, tone: OutreachTone) => void;
 }
 
-export function ScoreResult({ result, onSave }: ScoreResultProps) {
+export function ScoreResult({ result, onSave, onUpdateOutreach }: ScoreResultProps) {
+  const [currentOutreach, setCurrentOutreach] = useState(result.outreach);
+  const [currentTone, setCurrentTone] = useState(result.outreachTone);
+
+  const handleRegenerate = async (tone: OutreachTone): Promise<OutreachBlockType | null> => {
+    try {
+      const { data, error } = await supabase.functions.invoke<{ 
+        success: boolean; 
+        outreach: OutreachBlockType; 
+        tone: OutreachTone;
+        error?: string;
+      }>('regenerate-outreach', {
+        body: {
+          companyName: result.companyName,
+          companyDescription: result.companyDescription,
+          tone,
+        },
+      });
+
+      if (error || !data?.success) {
+        throw new Error(error?.message || data?.error || 'Failed to regenerate');
+      }
+
+      setCurrentOutreach(data.outreach);
+      setCurrentTone(data.tone);
+      
+      if (onUpdateOutreach) {
+        onUpdateOutreach(data.outreach, data.tone);
+      }
+
+      toast.success(`Regenerated with ${tone} tone`);
+      return data.outreach;
+    } catch (err) {
+      console.error('Regenerate error:', err);
+      toast.error('Failed to regenerate outreach');
+      return null;
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -49,13 +91,16 @@ export function ScoreResult({ result, onSave }: ScoreResultProps) {
 
       {/* Full Outreach Block */}
       <OutreachBlock 
-        outreach={result.outreach || {
+        outreach={currentOutreach || {
           subjectLine: "Quick question",
           openingLine: result.openingLine,
           valueHook: "I believe there's an opportunity here.",
           cta: "Would a quick call work?"
         }} 
         companyName={result.companyName}
+        companyDescription={result.companyDescription}
+        currentTone={currentTone}
+        onRegenerate={handleRegenerate}
         legacyOpeningLine={result.openingLine}
       />
     </motion.div>

@@ -7,10 +7,9 @@ import {
   TrendingUp, 
   Globe,
   LucideIcon,
-  Plus,
-  Minus
 } from 'lucide-react';
 import { CriteriaScore } from '@/types/icp';
+import { useICPStore } from '@/stores/icpStore';
 
 const iconMap: Record<string, LucideIcon> = {
   Users,
@@ -29,29 +28,37 @@ interface SignalBreakdownProps {
 interface SignalRowProps {
   criteria: CriteriaScore;
   index: number;
+  isAdvanced: boolean;
 }
 
-function SignalRow({ criteria, index }: SignalRowProps) {
+function SignalRow({ criteria, index, isAdvanced }: SignalRowProps) {
   const Icon = iconMap[criteria.icon] || Building2;
-  const percentage = Math.round((criteria.score / criteria.maxScore) * 100);
   
-  // Calculate contribution relative to weight
-  // If score equals maxScore, full contribution
-  // Below 50% of max is considered negative/poor
-  const isStrong = percentage >= 70;
+  // For advanced mode, use the advancedScore directly
+  const advancedScore = criteria.advancedScore;
+  const hasAdvancedScore = isAdvanced && advancedScore !== undefined;
+  
+  // Standard mode calculations
+  const percentage = Math.round((criteria.score / criteria.maxScore) * 100);
   const isModerate = percentage >= 40 && percentage < 70;
   const isPoor = percentage < 40;
   
-  // Show as positive contribution (actual score)
-  const contributionValue = criteria.score;
+  // For advanced mode, determine color based on sign
+  const advancedIsNegative = hasAdvancedScore && advancedScore < 0;
   
   const getContributionColor = () => {
+    if (hasAdvancedScore) {
+      return advancedIsNegative ? 'text-destructive' : 'text-success';
+    }
     if (isPoor) return 'text-destructive';
     if (isModerate) return 'text-warning';
     return 'text-success';
   };
 
   const getContributionBg = () => {
+    if (hasAdvancedScore) {
+      return advancedIsNegative ? 'bg-destructive/10' : 'bg-success/10';
+    }
     if (isPoor) return 'bg-destructive/10';
     if (isModerate) return 'bg-warning/10';
     return 'bg-success/10';
@@ -80,34 +87,48 @@ function SignalRow({ criteria, index }: SignalRowProps) {
       </div>
       
       <div className="flex items-center gap-2 shrink-0 ml-3">
-        {/* Score indicator */}
-        <div className={`flex items-center gap-1 px-2 py-1 rounded-md font-mono text-sm font-semibold ${getContributionBg()} ${getContributionColor()}`}>
-          {isPoor ? (
-            <Minus className="h-3 w-3" />
-          ) : (
-            <Plus className="h-3 w-3" />
-          )}
-          {contributionValue}
-        </div>
-        
-        {/* Max indicator */}
-        <span className="text-xs text-muted-foreground">
-          / {criteria.maxScore}
-        </span>
+        {hasAdvancedScore ? (
+          // Advanced mode: show -5 to +5 score prominently
+          <div className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-mono text-sm font-bold ${getContributionBg()} ${getContributionColor()}`}>
+            {advancedScore > 0 ? '+' : ''}{advancedScore}
+          </div>
+        ) : (
+          // Standard mode: show contribution
+          <>
+            <div className={`flex items-center gap-1 px-2 py-1 rounded-md font-mono text-sm font-semibold ${getContributionBg()} ${getContributionColor()}`}>
+              {isPoor ? '−' : '+'}{criteria.score}
+            </div>
+            <span className="text-xs text-muted-foreground">
+              / {criteria.maxScore}
+            </span>
+          </>
+        )}
       </div>
     </motion.div>
   );
 }
 
 export function SignalBreakdown({ breakdown, totalScore }: SignalBreakdownProps) {
+  const { scoringMode } = useICPStore();
+  const isAdvanced = scoringMode === 'advanced';
+  
   // Sort by score percentage (best matches first)
   const sortedBreakdown = [...breakdown].sort((a, b) => {
+    if (isAdvanced && a.advancedScore !== undefined && b.advancedScore !== undefined) {
+      return b.advancedScore - a.advancedScore;
+    }
     const aPercent = a.score / a.maxScore;
     const bPercent = b.score / b.maxScore;
     return bPercent - aPercent;
   });
 
   const maxPossible = breakdown.reduce((sum, c) => sum + c.maxScore, 0);
+  
+  // Calculate advanced mode totals
+  const advancedTotal = isAdvanced 
+    ? breakdown.reduce((sum, c) => sum + (c.advancedScore || 0), 0)
+    : null;
+  const advancedMax = isAdvanced ? breakdown.length * 5 : null;
 
   return (
     <motion.div
@@ -122,7 +143,7 @@ export function SignalBreakdown({ breakdown, totalScore }: SignalBreakdownProps)
             Signal Breakdown
           </h3>
           <span className="text-xs text-muted-foreground font-mono">
-            SCORING RECEIPT
+            {isAdvanced ? 'GTM PARTNERS FRAMEWORK' : 'SCORING RECEIPT'}
           </span>
         </div>
       </div>
@@ -130,7 +151,12 @@ export function SignalBreakdown({ breakdown, totalScore }: SignalBreakdownProps)
       {/* Signals */}
       <div className="px-4 py-2">
         {sortedBreakdown.map((criteria, index) => (
-          <SignalRow key={criteria.criteriaId} criteria={criteria} index={index} />
+          <SignalRow 
+            key={criteria.criteriaId} 
+            criteria={criteria} 
+            index={index} 
+            isAdvanced={isAdvanced}
+          />
         ))}
       </div>
       
@@ -138,15 +164,28 @@ export function SignalBreakdown({ breakdown, totalScore }: SignalBreakdownProps)
       <div className="px-4 py-3 border-t border-border bg-secondary/50">
         <div className="flex items-center justify-between">
           <span className="font-display text-sm font-semibold text-foreground">
-            Total Score
+            {isAdvanced ? 'Net Score' : 'Total Score'}
           </span>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-lg font-bold text-primary">
-              {totalScore}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              / {maxPossible}
-            </span>
+            {isAdvanced && advancedTotal !== null ? (
+              <>
+                <span className={`font-mono text-lg font-bold ${advancedTotal >= 0 ? 'text-success' : 'text-destructive'}`}>
+                  {advancedTotal > 0 ? '+' : ''}{advancedTotal}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  (max +{advancedMax})
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="font-mono text-lg font-bold text-primary">
+                  {totalScore}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  / {maxPossible}
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>

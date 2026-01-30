@@ -8,7 +8,7 @@ import { BatchResults } from '@/components/scoring/BatchResults';
 import { ScoreResult } from '@/components/scoring/ScoreResult';
 import { ScoringLoader } from '@/components/scoring/ScoringLoader';
 import { useICPStore } from '@/stores/icpStore';
-import { ProspectScore, getTierFromScore, CriteriaScore, EnrichedCompany } from '@/types/icp';
+import { ProspectScore, getTierFromScore, CriteriaScore, EnrichedCompany, ScoringMode } from '@/types/icp';
 import { Target, User, Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,7 +21,7 @@ interface AIScoreResponse {
 }
 
 export default function ScorePage() {
-  const { criteria, addProspect } = useICPStore();
+  const { criteria, addProspect, scoringMode } = useICPStore();
   
   // Single mode state
   const [companyInfo, setCompanyInfo] = useState('');
@@ -53,7 +53,8 @@ export default function ScorePage() {
           name: c.name,
           weight: c.weight,
           description: c.description,
-        }))
+        })),
+        scoringMode,
       },
     });
 

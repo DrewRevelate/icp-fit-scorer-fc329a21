@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { SignalBreakdown } from '@/components/SignalBreakdown';
-import { OpeningLineCard } from '@/components/OpeningLineCard';
+import { OutreachBlock } from '@/components/OutreachBlock';
 import { ProspectScore } from '@/types/icp';
 import { Save } from 'lucide-react';
 
@@ -46,8 +46,17 @@ export function ScoreResult({ result, onSave }: ScoreResultProps) {
         totalScore={result.totalScore} 
       />
 
-      {/* Opening Line */}
-      <OpeningLineCard line={result.openingLine} companyName={result.companyName} />
+      {/* Full Outreach Block */}
+      <OutreachBlock 
+        outreach={result.outreach || {
+          subjectLine: "Quick question",
+          openingLine: result.openingLine,
+          valueHook: "I believe there's an opportunity here.",
+          cta: "Would a quick call work?"
+        }} 
+        companyName={result.companyName}
+        legacyOpeningLine={result.openingLine}
+      />
     </motion.div>
   );
 }

@@ -153,10 +153,31 @@ export function ProspectRow({
             </div>
           </div>
           
-          <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-            <p className="text-sm text-muted-foreground mb-1">Opening Line:</p>
-            <p className="text-foreground italic">"{prospect.openingLine}"</p>
-          </div>
+          {prospect.outreach ? (
+            <div className="space-y-3">
+              <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Subject</p>
+                <p className="text-foreground font-medium">{prospect.outreach.subjectLine}</p>
+              </div>
+              <div className="p-3 rounded-lg bg-success/5 border border-success/20">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Opening</p>
+                <p className="text-foreground">{prospect.outreach.openingLine}</p>
+              </div>
+              <div className="p-3 rounded-lg bg-warning/5 border border-warning/20">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Value Hook</p>
+                <p className="text-foreground">{prospect.outreach.valueHook}</p>
+              </div>
+              <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">CTA</p>
+                <p className="text-foreground">{prospect.outreach.cta}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+              <p className="text-sm text-muted-foreground mb-1">Opening Line:</p>
+              <p className="text-foreground italic">"{prospect.openingLine}"</p>
+            </div>
+          )}
         </motion.div>
       )}
     </motion.div>

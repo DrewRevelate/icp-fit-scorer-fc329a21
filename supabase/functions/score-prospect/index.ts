@@ -59,7 +59,11 @@ Scoring Guidelines (GTM Partners Framework):
 
 IMPORTANT: You MUST use only these 6 values. No zeros, no in-between scores. Force a clear decision.
 
-Also extract the company name and generate a personalized cold outreach opening line.
+Also extract the company name and generate a FULL personalized cold outreach block with:
+1. Subject line (compelling, under 50 chars, creates curiosity)
+2. Opening line (personalized hook based on company intel)
+3. Value hook (1-2 sentences connecting their situation to your value)
+4. CTA (specific, low-friction next step)
 
 Respond ONLY with valid JSON in this exact format:
 {
@@ -71,7 +75,12 @@ Respond ONLY with valid JSON in this exact format:
       "reasoning": "brief explanation of why this score"
     }
   ],
-  "openingLine": "personalized cold outreach opening line"
+  "outreach": {
+    "subjectLine": "compelling subject line",
+    "openingLine": "personalized opening hook",
+    "valueHook": "1-2 sentence value proposition",
+    "cta": "specific call to action"
+  }
 }`
       : `You are an ICP (Ideal Customer Profile) scoring expert for B2B sales. You analyze company information and score them against specific criteria.
 
@@ -79,7 +88,11 @@ You will receive company information and a list of scoring criteria with their w
 1. A score from 0 to the maximum weight (the weight is the max score for that criterion)
 2. A brief reasoning (1 sentence) explaining the score
 
-Also generate a personalized cold outreach opening line based on the analysis.
+Also generate a FULL personalized cold outreach block with:
+1. Subject line (compelling, under 50 chars, creates curiosity)
+2. Opening line (personalized hook based on company intel)
+3. Value hook (1-2 sentences connecting their situation to your value)
+4. CTA (specific, low-friction next step)
 
 IMPORTANT: Extract the company name from the provided information. If not clear, use the first few words or "Unknown Company".
 
@@ -93,7 +106,12 @@ Respond ONLY with valid JSON in this exact format:
       "reasoning": "brief explanation"
     }
   ],
-  "openingLine": "personalized cold outreach opening line"
+  "outreach": {
+    "subjectLine": "compelling subject line",
+    "openingLine": "personalized opening hook",
+    "valueHook": "1-2 sentence value proposition",
+    "cta": "specific call to action"
+  }
 }`;
 
     const userPrompt = isAdvanced
@@ -212,11 +230,20 @@ Return the JSON response with scores for each criterion and a personalized openi
 
     totalScore = criteriaBreakdown.reduce((sum, c) => sum + c.score, 0);
 
+    // Build outreach block with fallbacks
+    const outreach = parsedResult.outreach || {
+      subjectLine: "Quick question about your growth",
+      openingLine: parsedResult.openingLine || "I'd love to connect and share how we can help your team.",
+      valueHook: "Based on what I've seen, there might be an opportunity to accelerate your goals.",
+      cta: "Would a 15-minute call this week work to explore this?"
+    };
+
     const result = {
       companyName: parsedResult.companyName || "Unknown Company",
       totalScore,
       criteriaBreakdown,
-      openingLine: parsedResult.openingLine || "I'd love to connect and share how we can help your team.",
+      openingLine: outreach.openingLine, // Legacy compatibility
+      outreach,
       scoringMode,
     };
 

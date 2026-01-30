@@ -1,0 +1,4 @@
+project_id = "dqqvbwcoibvifxkuhaua"
+
+[functions.score-prospect]
+verify_jwt = false

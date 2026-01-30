@@ -9,12 +9,29 @@ export default {
       center: true,
       padding: "2rem",
       screens: {
-        "2xl": "1400px",
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
       },
     },
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Fraunces', 'Georgia', 'serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      },
+      fontSize: {
+        'display': ['4rem', { lineHeight: '1.1', fontWeight: '600' }],
+        'h1': ['3rem', { lineHeight: '1.15', fontWeight: '600' }],
+        'h2': ['2.25rem', { lineHeight: '1.2', fontWeight: '600' }],
+        'h3': ['1.75rem', { lineHeight: '1.25', fontWeight: '600' }],
+        'h4': ['1.375rem', { lineHeight: '1.3', fontWeight: '600' }],
+        'body-lg': ['1.125rem', { lineHeight: '1.6', fontWeight: '400' }],
+        'body': ['1rem', { lineHeight: '1.6', fontWeight: '400' }],
+        'body-sm': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'caption': ['0.75rem', { lineHeight: '1.4', fontWeight: '500' }],
+        'overline': ['0.75rem', { lineHeight: '1.4', fontWeight: '600', letterSpacing: '0.1em' }],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -41,6 +58,10 @@ export default {
         warning: {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -74,10 +95,20 @@ export default {
           strong: "hsl(var(--score-strong))",
         },
       },
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        'sm': 'var(--shadow-sm)',
+        'md': 'var(--shadow-md)',
+        'lg': 'var(--shadow-lg)',
+        'glow': 'var(--shadow-glow)',
       },
       keyframes: {
         "accordion-down": {

@@ -13,7 +13,7 @@ export function ScoreGauge({ score, size = 280, animate = true }: ScoreGaugeProp
   const category = getScoreCategory(score);
   const label = getScoreLabel(category);
 
-  const strokeWidth = 12;
+  const strokeWidth = 10;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const progress = (displayScore / 100) * circumference;
@@ -59,11 +59,11 @@ export function ScoreGauge({ score, size = 280, animate = true }: ScoreGaugeProp
   const getGlowColor = () => {
     switch (category) {
       case 'poor':
-        return 'hsl(var(--score-poor) / 0.4)';
+        return 'hsl(var(--score-poor) / 0.3)';
       case 'moderate':
-        return 'hsl(var(--score-moderate) / 0.4)';
+        return 'hsl(var(--score-moderate) / 0.3)';
       case 'strong':
-        return 'hsl(var(--score-strong) / 0.4)';
+        return 'hsl(var(--score-strong) / 0.3)';
     }
   };
 
@@ -79,7 +79,7 @@ export function ScoreGauge({ score, size = 280, animate = true }: ScoreGaugeProp
         height={size}
         className="transform -rotate-90"
         style={{
-          filter: `drop-shadow(0 0 20px ${getGlowColor()})`,
+          filter: `drop-shadow(0 0 24px ${getGlowColor()})`,
         }}
       >
         {/* Background track */}
@@ -88,9 +88,9 @@ export function ScoreGauge({ score, size = 280, animate = true }: ScoreGaugeProp
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="hsl(var(--secondary))"
+          stroke="hsl(var(--border))"
           strokeWidth={strokeWidth}
-          className="opacity-30"
+          className="opacity-50"
         />
         
         {/* Progress arc */}
@@ -113,7 +113,7 @@ export function ScoreGauge({ score, size = 280, animate = true }: ScoreGaugeProp
       {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <motion.span
-          className="text-6xl font-bold tabular-nums"
+          className="font-display text-6xl font-bold tabular-nums"
           style={{ color: getStrokeColor() }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -122,7 +122,7 @@ export function ScoreGauge({ score, size = 280, animate = true }: ScoreGaugeProp
           {displayScore}
         </motion.span>
         <motion.span
-          className="text-lg font-medium text-muted-foreground"
+          className="text-base font-medium text-muted-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}

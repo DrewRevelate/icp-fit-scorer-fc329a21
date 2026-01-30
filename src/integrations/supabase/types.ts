@@ -14,6 +14,116 @@ export type Database = {
   }
   public: {
     Tables: {
+      engagement_events: {
+        Row: {
+          created_at: string
+          engagement_type_id: string
+          id: string
+          lead_id: string
+          metadata: Json | null
+          occurred_at: string
+          points_earned: number
+        }
+        Insert: {
+          created_at?: string
+          engagement_type_id: string
+          id?: string
+          lead_id: string
+          metadata?: Json | null
+          occurred_at?: string
+          points_earned: number
+        }
+        Update: {
+          created_at?: string
+          engagement_type_id?: string
+          id?: string
+          lead_id?: string
+          metadata?: Json | null
+          occurred_at?: string
+          points_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "engagement_events_engagement_type_id_fkey"
+            columns: ["engagement_type_id"]
+            isOneToOne: false
+            referencedRelation: "engagement_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      engagement_settings: {
+        Row: {
+          cold_threshold: number
+          created_at: string
+          decay_period_days: number
+          engagement_enabled: boolean
+          hot_threshold: number
+          id: string
+          updated_at: string
+          warm_threshold: number
+        }
+        Insert: {
+          cold_threshold?: number
+          created_at?: string
+          decay_period_days?: number
+          engagement_enabled?: boolean
+          hot_threshold?: number
+          id?: string
+          updated_at?: string
+          warm_threshold?: number
+        }
+        Update: {
+          cold_threshold?: number
+          created_at?: string
+          decay_period_days?: number
+          engagement_enabled?: boolean
+          hot_threshold?: number
+          id?: string
+          updated_at?: string
+          warm_threshold?: number
+        }
+        Relationships: []
+      }
+      engagement_types: {
+        Row: {
+          category: string
+          created_at: string
+          current_points: number
+          default_points: number
+          description: string | null
+          enabled: boolean
+          icon: string
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          current_points: number
+          default_points: number
+          description?: string | null
+          enabled?: boolean
+          icon?: string
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          current_points?: number
+          default_points?: number
+          description?: string | null
+          enabled?: boolean
+          icon?: string
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       first_party_signals: {
         Row: {
           created_at: string

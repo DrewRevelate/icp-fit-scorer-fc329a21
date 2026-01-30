@@ -8,7 +8,7 @@ import { BatchResults } from '@/components/scoring/BatchResults';
 import { ScoreResult } from '@/components/scoring/ScoreResult';
 import { ScoringLoader } from '@/components/scoring/ScoringLoader';
 import { useICPStore } from '@/stores/icpStore';
-import { ProspectScore, getTierFromScore, CriteriaScore, EnrichedCompany, ScoringMode } from '@/types/icp';
+import { ProspectScore, getTierFromScore, CriteriaScore, EnrichedCompany, ScoringMode, OutreachTone, OutreachBlock } from '@/types/icp';
 import { Target, User, Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +18,8 @@ interface AIScoreResponse {
   totalScore: number;
   criteriaBreakdown: CriteriaScore[];
   openingLine: string;
+  outreach?: OutreachBlock;
+  outreachTone?: OutreachTone;
 }
 
 export default function ScorePage() {
@@ -45,7 +47,7 @@ export default function ScorePage() {
       .filter(line => line.length > 0);
   }, [batchInput]);
 
-  const scoreCompany = async (companyInfo: string): Promise<ProspectScore | null> => {
+  const scoreCompany = async (companyInfo: string, tone: OutreachTone = 'casual'): Promise<ProspectScore | null> => {
     const { data, error } = await supabase.functions.invoke<AIScoreResponse>('score-prospect', {
       body: { 
         companyInfo, 
@@ -56,6 +58,7 @@ export default function ScorePage() {
           description: c.description,
         })),
         scoringMode,
+        outreachTone: tone,
       },
     });
 
@@ -74,11 +77,13 @@ export default function ScorePage() {
       tierDefinition: tierDef,
       criteriaBreakdown: data.criteriaBreakdown,
       openingLine: data.openingLine,
+      outreach: data.outreach,
+      outreachTone: data.outreachTone,
       createdAt: new Date().toISOString(),
     };
   };
 
-  const handleSingleScore = async () => {
+  const handleSingleScore = async (tone: OutreachTone) => {
     if (!companyInfo.trim()) {
       toast({
         title: 'Input Required',
@@ -92,7 +97,7 @@ export default function ScorePage() {
     setResult(null);
 
     try {
-      const prospect = await scoreCompany(companyInfo);
+      const prospect = await scoreCompany(companyInfo, tone);
       setResult(prospect);
     } catch (err) {
       console.error('Scoring error:', err);

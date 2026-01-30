@@ -13,11 +13,13 @@ interface ICPCriteria {
 }
 
 type ScoringMode = 'standard' | 'advanced';
+type OutreachTone = 'casual' | 'formal' | 'challenger';
 
 interface ScoreRequest {
   companyInfo: string;
   criteria: ICPCriteria[];
   scoringMode?: ScoringMode;
+  outreachTone?: OutreachTone;
 }
 
 serve(async (req) => {
@@ -32,7 +34,7 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const { companyInfo, criteria, scoringMode = 'standard' } = await req.json() as ScoreRequest;
+    const { companyInfo, criteria, scoringMode = 'standard', outreachTone = 'casual' } = await req.json() as ScoreRequest;
 
     if (!companyInfo || !criteria || criteria.length === 0) {
       return new Response(
@@ -42,6 +44,28 @@ serve(async (req) => {
     }
 
     const isAdvanced = scoringMode === 'advanced';
+    
+    // Tone-specific instructions for outreach generation
+    const toneInstructions: Record<OutreachTone, string> = {
+      casual: `Write in a CASUAL, friendly tone:
+- Use conversational language like you're talking to a peer
+- Keep it light and approachable
+- Use contractions (you're, we're, let's)
+- Can include light humor or personality
+- Example: "Hey! Noticed you're scaling fast..."`,
+      formal: `Write in a FORMAL, professional tone:
+- Use polished, enterprise-appropriate language
+- Maintain professional distance while being warm
+- Avoid slang or overly casual expressions
+- Structure sentences properly with no contractions
+- Example: "I hope this message finds you well. I was impressed to learn..."`,
+      challenger: `Write in a CHALLENGER, provocative tone:
+- Be bold and pattern-interrupt with unexpected statements
+- Challenge assumptions or conventional thinking
+- Create urgency with insight-led statements
+- Use confident, direct language
+- Example: "Most companies in your space are leaving money on the table by..."`,
+    };
 
     // Different prompts for different scoring modes
     const systemPrompt = isAdvanced 
@@ -64,6 +88,8 @@ Also extract the company name and generate a FULL personalized cold outreach blo
 2. Opening line (personalized hook based on company intel)
 3. Value hook (1-2 sentences connecting their situation to your value)
 4. CTA (specific, low-friction next step)
+
+${toneInstructions[outreachTone]}
 
 Respond ONLY with valid JSON in this exact format:
 {
@@ -93,6 +119,8 @@ Also generate a FULL personalized cold outreach block with:
 2. Opening line (personalized hook based on company intel)
 3. Value hook (1-2 sentences connecting their situation to your value)
 4. CTA (specific, low-friction next step)
+
+${toneInstructions[outreachTone]}
 
 IMPORTANT: Extract the company name from the provided information. If not clear, use the first few words or "Unknown Company".
 
@@ -245,6 +273,7 @@ Return the JSON response with scores for each criterion and a personalized openi
       openingLine: outreach.openingLine, // Legacy compatibility
       outreach,
       scoringMode,
+      outreachTone,
     };
 
     console.log(`Scoring complete (${scoringMode}). Total score:`, totalScore);

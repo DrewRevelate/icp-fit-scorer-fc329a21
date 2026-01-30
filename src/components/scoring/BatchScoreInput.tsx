@@ -259,8 +259,12 @@ Stripe - 8000 employees, FinTech, $95B valuation"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-foreground truncate">{company.companyName}</p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {company.industry} • {company.companySize} • {company.fundingStage}
+                    <p className="text-xs text-muted-foreground truncate flex items-center gap-1.5">
+                      <span>{company.industry}</span>
+                      <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+                      <span>{company.companySize}</span>
+                      <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+                      <span>{company.fundingStage}</span>
                     </p>
                   </div>
                   {company.dataSources && (

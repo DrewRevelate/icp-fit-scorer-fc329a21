@@ -271,20 +271,20 @@ export function IntentSettings() {
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 rounded-lg bg-secondary/20 border border-border/50">
               <p className="font-medium text-foreground mb-1">First-Party Signals</p>
-              <ul className="text-xs space-y-1">
-                <li>• Pricing/demo page visits</li>
-                <li>• Email engagement</li>
-                <li>• Trial signups</li>
-                <li>• Product comparisons</li>
+              <ul className="text-xs space-y-1.5">
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-primary/60" />Pricing/demo page visits</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-primary/60" />Email engagement</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-primary/60" />Trial signups</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-primary/60" />Product comparisons</li>
               </ul>
             </div>
             <div className="p-3 rounded-lg bg-secondary/20 border border-border/50">
               <p className="font-medium text-foreground mb-1">Third-Party Signals</p>
-              <ul className="text-xs space-y-1">
-                <li>• G2/TrustRadius research</li>
-                <li>• Competitor comparisons</li>
-                <li>• Intent provider data</li>
-                <li>• Manual observations</li>
+              <ul className="text-xs space-y-1.5">
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-accent/60" />G2/TrustRadius research</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-accent/60" />Competitor comparisons</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-accent/60" />Intent provider data</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-accent/60" />Manual observations</li>
               </ul>
             </div>
           </div>

@@ -145,10 +145,10 @@ export function IntentTimeline({ signals, onDeleteFirstParty, onDeleteThirdParty
                     )}
                   </div>
 
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {formatDistanceToNow(new Date(signal.observed_at), { addSuffix: true })}
-                    <span className="mx-1">•</span>
-                    {format(new Date(signal.observed_at), 'MMM d, yyyy h:mm a')}
+                  <p className="text-xs text-muted-foreground mt-2 flex items-center gap-2">
+                    <span>{formatDistanceToNow(new Date(signal.observed_at), { addSuffix: true })}</span>
+                    <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+                    <span>{format(new Date(signal.observed_at), 'MMM d, yyyy h:mm a')}</span>
                   </p>
                 </div>
 

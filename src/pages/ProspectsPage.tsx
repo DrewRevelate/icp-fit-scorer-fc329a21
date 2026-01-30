@@ -267,7 +267,7 @@ export default function ProspectsPage() {
               <TrendingUp className="h-16 w-16 text-muted-foreground/30 mx-auto mb-6" />
               <h3 className="text-2xl font-semibold text-foreground mb-3">Engagement Scoring Disabled</h3>
               <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
-                Enable engagement scoring in Settings → Engage to track lead activity.
+                Enable engagement scoring in Settings, then Engage to track lead activity.
               </p>
               <Button asChild className="bg-primary hover:bg-primary/90 rounded-xl px-6">
                 <a href="/setup">Go to Settings</a>

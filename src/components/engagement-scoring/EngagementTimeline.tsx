@@ -117,7 +117,7 @@ export function EngagementTimeline({ leadId, limit = 20 }: EngagementTimelinePro
                       </div>
                       <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                         <span>{format(new Date(event.occurred_at), 'MMM d, yyyy h:mm a')}</span>
-                        <span>•</span>
+                        <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
                         <span>{formatDistanceToNow(new Date(event.occurred_at), { addSuffix: true })}</span>
                       </div>
                     </div>

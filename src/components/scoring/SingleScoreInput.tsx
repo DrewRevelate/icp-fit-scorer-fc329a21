@@ -123,9 +123,9 @@ export function SingleScoreInput({
             : `Paste a company URL to auto-enrich, or describe manually...
 
 Examples:
-• stripe.com
-• https://hubspot.com
-• Acme Corp - B2B SaaS, 150 employees, Series B`}
+  stripe.com
+  https://hubspot.com
+  Acme Corp - B2B SaaS, 150 employees, Series B`}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="min-h-[120px] bg-secondary/50 border-border resize-none pr-4"

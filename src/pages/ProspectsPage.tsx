@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useICPStore } from '@/stores/icpStore';
 import { ProspectRow } from '@/components/ProspectRow';
 import { CompareView } from '@/components/CompareView';
+import { TopEngagedLeads } from '@/components/engagement-scoring/TopEngagedLeads';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -12,8 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Users, Search, GitCompare, Trash2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Users, Search, GitCompare, Trash2, TrendingUp, Target } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useEngagementSettings } from '@/hooks/useEngagementScoring';
 
 type SortField = 'tier' | 'score' | 'date' | 'name';
 type SortOrder = 'asc' | 'desc';
@@ -25,6 +28,9 @@ export default function ProspectsPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [activeTab, setActiveTab] = useState('prospects');
+  
+  const { data: engagementSettings } = useEngagementSettings();
 
   const tierOrder = { A: 0, B: 1, C: 2, D: 3 };
 
@@ -91,7 +97,7 @@ export default function ProspectsPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -109,109 +115,159 @@ export default function ProspectsPage() {
         </p>
       </motion.div>
 
-      {prospects.length > 0 ? (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-4"
-          >
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search prospects..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-secondary/50 border-border"
-              />
-            </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
+          <TabsTrigger value="prospects" className="gap-2">
+            <Target className="h-4 w-4" />
+            Prospects
+          </TabsTrigger>
+          <TabsTrigger value="engagement" className="gap-2" disabled={!engagementSettings?.engagement_enabled}>
+            <TrendingUp className="h-4 w-4" />
+            Engagement
+          </TabsTrigger>
+        </TabsList>
 
-            <div className="flex gap-2">
-              <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
-                <SelectTrigger className="w-32 bg-secondary/50">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tier">Tier</SelectItem>
-                  <SelectItem value="date">Date</SelectItem>
-                  <SelectItem value="score">Score</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as SortOrder)}>
-                <SelectTrigger className="w-28 bg-secondary/50">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="desc">Desc</SelectItem>
-                  <SelectItem value="asc">Asc</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {compareIds.length >= 2 && (
-                <Button
-                  onClick={() => setShowCompare(true)}
-                  className="gap-2 bg-primary hover:bg-primary/90"
-                >
-                  <GitCompare className="h-4 w-4" />
-                  Compare ({compareIds.length})
-                </Button>
-              )}
-
-              <Button
-                variant="outline"
-                onClick={handleClearAll}
-                className="gap-2 text-destructive hover:text-destructive"
+        <TabsContent value="prospects">
+          {prospects.length > 0 ? (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="flex flex-col sm:flex-row gap-4"
               >
-                <Trash2 className="h-4 w-4" />
-                Clear All
-              </Button>
-            </div>
-          </motion.div>
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search prospects..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-secondary/50 border-border"
+                  />
+                </div>
 
-          <div className="space-y-3">
-            <AnimatePresence mode="popLayout">
-              {filteredProspects.map((prospect) => (
-                <ProspectRow
-                  key={prospect.id}
-                  prospect={prospect}
-                  onDelete={handleDelete}
-                  isComparing={compareIds.includes(prospect.id)}
-                  onToggleCompare={() => toggleCompare(prospect.id)}
-                />
-              ))}
-            </AnimatePresence>
-          </div>
+                <div className="flex gap-2">
+                  <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
+                    <SelectTrigger className="w-32 bg-secondary/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tier">Tier</SelectItem>
+                      <SelectItem value="date">Date</SelectItem>
+                      <SelectItem value="score">Score</SelectItem>
+                      <SelectItem value="name">Name</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-          {filteredProspects.length === 0 && (
+                  <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as SortOrder)}>
+                    <SelectTrigger className="w-28 bg-secondary/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="desc">Desc</SelectItem>
+                      <SelectItem value="asc">Asc</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {compareIds.length >= 2 && (
+                    <Button
+                      onClick={() => setShowCompare(true)}
+                      className="gap-2 bg-primary hover:bg-primary/90"
+                    >
+                      <GitCompare className="h-4 w-4" />
+                      Compare ({compareIds.length})
+                    </Button>
+                  )}
+
+                  <Button
+                    variant="outline"
+                    onClick={handleClearAll}
+                    className="gap-2 text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Clear All
+                  </Button>
+                </div>
+              </motion.div>
+
+              <div className="space-y-3 mt-4">
+                <AnimatePresence mode="popLayout">
+                  {filteredProspects.map((prospect) => (
+                    <ProspectRow
+                      key={prospect.id}
+                      prospect={prospect}
+                      onDelete={handleDelete}
+                      isComparing={compareIds.includes(prospect.id)}
+                      onToggleCompare={() => toggleCompare(prospect.id)}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+
+              {filteredProspects.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
+                  <p className="text-muted-foreground">No prospects match your search.</p>
+                </motion.div>
+              )}
+            </>
+          ) : (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-center py-16 glass-card"
             >
-              <p className="text-muted-foreground">No prospects match your search.</p>
+              <Users className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">No Prospects Yet</h3>
+              <p className="text-muted-foreground mb-6">
+                Start scoring companies to build your prospect list.
+              </p>
+              <Button asChild className="bg-primary hover:bg-primary/90">
+                <a href="/">Score Your First Prospect</a>
+              </Button>
             </motion.div>
           )}
-        </>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-center py-16 glass-card"
-        >
-          <Users className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-foreground mb-2">No Prospects Yet</h3>
-          <p className="text-muted-foreground mb-6">
-            Start scoring companies to build your prospect list.
-          </p>
-          <Button asChild className="bg-primary hover:bg-primary/90">
-            <a href="/">Score Your First Prospect</a>
-          </Button>
-        </motion.div>
-      )}
+        </TabsContent>
+
+        <TabsContent value="engagement">
+          {engagementSettings?.engagement_enabled ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="grid gap-6"
+            >
+              <TopEngagedLeads 
+                limit={15}
+                onLeadClick={(leadId) => {
+                  toast({
+                    title: 'Lead Selected',
+                    description: `Viewing engagement for ${leadId}`,
+                  });
+                }}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-16 glass-card"
+            >
+              <TrendingUp className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Engagement Scoring Disabled</h3>
+              <p className="text-muted-foreground mb-6">
+                Enable engagement scoring in Settings → Engage to track lead activity.
+              </p>
+              <Button asChild className="bg-primary hover:bg-primary/90">
+                <a href="/setup">Go to Settings</a>
+              </Button>
+            </motion.div>
+          )}
+        </TabsContent>
+      </Tabs>
 
       <AnimatePresence>
         {showCompare && compareProspects.length >= 2 && (

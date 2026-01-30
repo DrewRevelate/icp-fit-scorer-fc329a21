@@ -1,18 +1,31 @@
 import { motion } from 'framer-motion';
-import { Mail, MessageSquare, Sparkles, MousePointer, Copy, Check } from 'lucide-react';
+import { Mail, MessageSquare, Sparkles, MousePointer, Copy, Check, RefreshCw, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { OutreachBlock as OutreachBlockType } from '@/types/icp';
+import { OutreachBlock as OutreachBlockType, OutreachTone, TONE_DEFINITIONS } from '@/types/icp';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
 
 interface OutreachBlockProps {
   outreach: OutreachBlockType;
   companyName: string;
+  companyDescription?: string;
+  currentTone?: OutreachTone;
+  onRegenerate?: (tone: OutreachTone) => Promise<OutreachBlockType | null>;
   // Legacy fallback
   legacyOpeningLine?: string;
 }
 
-export function OutreachBlock({ outreach, companyName, legacyOpeningLine }: OutreachBlockProps) {
+export function OutreachBlock({ outreach: initialOutreach, companyName, companyDescription, currentTone, onRegenerate, legacyOpeningLine }: OutreachBlockProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [outreach, setOutreach] = useState(initialOutreach);
+  const [activeTone, setActiveTone] = useState<OutreachTone | undefined>(currentTone);
 
   const handleCopy = async (text: string, field: string) => {
     await navigator.clipboard.writeText(text);
@@ -31,6 +44,21 @@ ${outreach.cta}`;
     await navigator.clipboard.writeText(fullEmail);
     setCopiedField('all');
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleRegenerate = async (tone: OutreachTone) => {
+    if (!onRegenerate || isRegenerating) return;
+    
+    setIsRegenerating(true);
+    try {
+      const newOutreach = await onRegenerate(tone);
+      if (newOutreach) {
+        setOutreach(newOutreach);
+        setActiveTone(tone);
+      }
+    } finally {
+      setIsRegenerating(false);
+    }
   };
 
   // If no outreach block, fall back to legacy opening line
@@ -98,25 +126,68 @@ ${outreach.cta}`;
           <div className="flex items-center gap-2">
             <Mail className="h-4 w-4 text-primary" />
             <h3 className="font-semibold text-foreground">Outreach Block</h3>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCopyAll}
-            className="gap-2"
-          >
-            {copiedField === 'all' ? (
-              <>
-                <Check className="h-3 w-3" />
-                Copied All
-              </>
-            ) : (
-              <>
-                <Copy className="h-3 w-3" />
-                Copy All
-              </>
+            {activeTone && (
+              <Badge variant="outline" className="text-xs capitalize">
+                {activeTone}
+              </Badge>
             )}
-          </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            {onRegenerate && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isRegenerating}
+                    className="gap-2"
+                  >
+                    {isRegenerating ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Regenerating...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="h-3 w-3" />
+                        Regenerate
+                      </>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {TONE_DEFINITIONS.map((tone) => (
+                    <DropdownMenuItem
+                      key={tone.id}
+                      onClick={() => handleRegenerate(tone.id)}
+                      className="flex flex-col items-start gap-0.5"
+                    >
+                      <span className="font-medium">{tone.name}</span>
+                      <span className="text-xs text-muted-foreground">{tone.description}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopyAll}
+              className="gap-2"
+            >
+              {copiedField === 'all' ? (
+                <>
+                  <Check className="h-3 w-3" />
+                  Copied All
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3 w-3" />
+                  Copy All
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
       

@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      disqualified_leads: {
+        Row: {
+          created_at: string
+          disqualified_at: string
+          id: string
+          is_overridden: boolean
+          lead_id: string
+          overridden_at: string | null
+          overridden_by: string | null
+          override_reason: string | null
+          total_negative_score: number
+          triggered_rules: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          disqualified_at?: string
+          id?: string
+          is_overridden?: boolean
+          lead_id: string
+          overridden_at?: string | null
+          overridden_by?: string | null
+          override_reason?: string | null
+          total_negative_score: number
+          triggered_rules?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          disqualified_at?: string
+          id?: string
+          is_overridden?: boolean
+          lead_id?: string
+          overridden_at?: string | null
+          overridden_by?: string | null
+          override_reason?: string | null
+          total_negative_score?: number
+          triggered_rules?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       engagement_events: {
         Row: {
           created_at: string
@@ -267,6 +309,78 @@ export type Database = {
           third_party_weight?: number
           trial_signup_weight?: number
           trustradius_weight?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      negative_scoring_rules: {
+        Row: {
+          condition_type: string
+          condition_value: string
+          created_at: string
+          description: string | null
+          enabled: boolean
+          id: string
+          name: string
+          points: number
+          reason_label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          condition_type: string
+          condition_value?: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name: string
+          points: number
+          reason_label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          condition_type?: string
+          condition_value?: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name?: string
+          points?: number
+          reason_label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      negative_scoring_settings: {
+        Row: {
+          auto_disqualify: boolean
+          created_at: string
+          disqualification_threshold: number
+          id: string
+          negative_enabled: boolean
+          subtract_from_other_models: boolean
+          updated_at: string
+        }
+        Insert: {
+          auto_disqualify?: boolean
+          created_at?: string
+          disqualification_threshold?: number
+          id?: string
+          negative_enabled?: boolean
+          subtract_from_other_models?: boolean
+          updated_at?: string
+        }
+        Update: {
+          auto_disqualify?: boolean
+          created_at?: string
+          disqualification_threshold?: number
+          id?: string
+          negative_enabled?: boolean
+          subtract_from_other_models?: boolean
           updated_at?: string
         }
         Relationships: []

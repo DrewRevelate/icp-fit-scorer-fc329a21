@@ -54,12 +54,12 @@ export default function SetupPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12">
-      {/* Hero section - flowing design */}
+    <div className="max-w-4xl mx-auto space-y-16">
+      {/* Hero section - flowing */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-6 pt-4"
+        className="text-center space-y-6 pt-8"
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -67,12 +67,12 @@ export default function SetupPage() {
           transition={{ delay: 0.1 }}
           className="inline-flex items-center gap-3"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 glow-effect">
-            <Settings className="h-6 w-6 text-primary" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+            <Settings className="h-5 w-5 text-primary" />
           </div>
         </motion.div>
         <h1 className="text-5xl sm:text-6xl font-bold gradient-text leading-tight">
-          Lead Scoring Configuration
+          Configuration
         </h1>
         <p className="text-muted-foreground max-w-xl mx-auto text-lg leading-relaxed">
           Configure AI-powered scoring criteria or set up rule-based lead qualification
@@ -80,30 +80,30 @@ export default function SetupPage() {
       </motion.div>
 
       <Tabs defaultValue="ai-scoring" className="w-full">
-        <TabsList className="flex flex-wrap justify-center gap-1 mb-8 bg-transparent p-0">
-          <TabsTrigger value="ai-scoring" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+        <TabsList className="flex flex-wrap justify-center gap-2 mb-12 bg-transparent p-0">
+          <TabsTrigger value="ai-scoring" className="gap-1.5 text-xs px-5 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0">
             <Zap className="h-4 w-4" />
-            <span className="hidden sm:inline">AI</span>
+            <span>AI</span>
           </TabsTrigger>
-          <TabsTrigger value="rule-based" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+          <TabsTrigger value="rule-based" className="gap-1.5 text-xs px-5 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0">
             <Calculator className="h-4 w-4" />
-            <span className="hidden sm:inline">Rules</span>
+            <span>Rules</span>
           </TabsTrigger>
-          <TabsTrigger value="predictive" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+          <TabsTrigger value="predictive" className="gap-1.5 text-xs px-5 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0">
             <Brain className="h-4 w-4" />
-            <span className="hidden sm:inline">Predictive</span>
+            <span>Predictive</span>
           </TabsTrigger>
-          <TabsTrigger value="intent" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+          <TabsTrigger value="intent" className="gap-1.5 text-xs px-5 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0">
             <Target className="h-4 w-4" />
-            <span className="hidden sm:inline">Intent</span>
+            <span>Intent</span>
           </TabsTrigger>
-          <TabsTrigger value="engagement" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+          <TabsTrigger value="engagement" className="gap-1.5 text-xs px-5 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0">
             <Activity className="h-4 w-4" />
-            <span className="hidden sm:inline">Engage</span>
+            <span>Engage</span>
           </TabsTrigger>
-          <TabsTrigger value="negative" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+          <TabsTrigger value="negative" className="gap-1.5 text-xs px-5 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0">
             <ShieldOff className="h-4 w-4" />
-            <span className="hidden sm:inline">Negative</span>
+            <span>Negative</span>
           </TabsTrigger>
         </TabsList>
 

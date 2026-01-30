@@ -97,12 +97,12 @@ export default function ProspectsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12">
-      {/* Hero section - flowing design */}
+    <div className="max-w-5xl mx-auto space-y-16">
+      {/* Hero section - flowing */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-6 pt-4"
+        className="text-center space-y-6 pt-8"
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -110,26 +110,25 @@ export default function ProspectsPage() {
           transition={{ delay: 0.1 }}
           className="inline-flex items-center gap-3"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 glow-effect">
-            <Users className="h-6 w-6 text-primary" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+            <Users className="h-5 w-5 text-primary" />
           </div>
         </motion.div>
         <h1 className="text-5xl sm:text-6xl font-bold gradient-text leading-tight">
-          Scored Prospects
+          Prospects
         </h1>
         <p className="text-muted-foreground max-w-xl mx-auto text-lg leading-relaxed">
-          View, compare, and manage all your scored companies. 
-          Select up to 3 prospects for side-by-side comparison.
+          View, compare, and manage all your scored companies.
         </p>
       </motion.div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full max-w-sm mx-auto grid-cols-2 mb-8 bg-secondary/30 p-1 rounded-xl">
-          <TabsTrigger value="prospects" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
+        <TabsList className="flex justify-center gap-2 mb-12 bg-transparent p-0">
+          <TabsTrigger value="prospects" className="gap-2 px-6 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0">
             <Target className="h-4 w-4" />
             Prospects
           </TabsTrigger>
-          <TabsTrigger value="engagement" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm" disabled={!engagementSettings?.engagement_enabled}>
+          <TabsTrigger value="engagement" className="gap-2 px-6 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0" disabled={!engagementSettings?.engagement_enabled}>
             <TrendingUp className="h-4 w-4" />
             Engagement
           </TabsTrigger>

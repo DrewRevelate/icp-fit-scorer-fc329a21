@@ -237,12 +237,12 @@ export default function ScorePage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12">
+    <div className="max-w-4xl mx-auto space-y-16">
       {/* Hero section - flowing, no box */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-6 pt-4"
+        className="text-center space-y-6 pt-8"
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -257,46 +257,51 @@ export default function ScorePage() {
         </h1>
         <p className="text-muted-foreground max-w-xl mx-auto text-lg leading-relaxed">
           Analyze companies and assign them to tiers based on your ICP criteria.
-          Get clear action recommendations for each prospect.
         </p>
       </motion.div>
 
-      {/* Main input card - fluid design */}
+      {/* Mode Toggle - pill style, no container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="fluid-card p-8"
       >
-        <Tabs defaultValue="single" className="space-y-8">
+        <Tabs defaultValue="single" className="space-y-10">
           <div className="flex items-center justify-center gap-3">
-            <TabsList className="grid w-full grid-cols-2 max-w-sm bg-secondary/30 p-1 rounded-xl">
-              <TabsTrigger value="single" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
+            <TabsList className="inline-flex bg-transparent p-0 gap-2">
+              <TabsTrigger 
+                value="single" 
+                className="gap-2 px-6 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0"
+              >
                 <User className="h-4 w-4" />
                 Single
               </TabsTrigger>
-              <TabsTrigger value="batch" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
+              <TabsTrigger 
+                value="batch" 
+                className="gap-2 px-6 py-2.5 rounded-full bg-secondary/20 data-[state=active]:bg-primary/15 data-[state=active]:text-primary border-0"
+              >
                 <Users className="h-4 w-4" />
                 Batch
               </TabsTrigger>
             </TabsList>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button className="text-muted-foreground hover:text-foreground transition-colors">
-                  <HelpCircle className="h-5 w-5" />
+                <button className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                  <HelpCircle className="h-4 w-4" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right" className="max-w-xs">
                 <p className="text-sm font-medium mb-1">Scoring Modes</p>
                 <p className="text-xs text-muted-foreground">
-                  <strong>Single:</strong> Analyze one company at a time with detailed results.
-                  <br /><strong>Batch:</strong> Process multiple companies at once for quick prioritization.
+                  <strong>Single:</strong> Analyze one company with detailed results.
+                  <br /><strong>Batch:</strong> Process multiple companies at once.
                 </p>
               </TooltipContent>
             </Tooltip>
           </div>
 
-          <TabsContent value="single" className="space-y-0">
+          {/* Input area - seamless, no container */}
+          <TabsContent value="single" className="seamless-section">
             <SingleScoreInput
               value={companyInfo}
               onChange={setCompanyInfo}
@@ -309,7 +314,7 @@ export default function ScorePage() {
             />
           </TabsContent>
 
-          <TabsContent value="batch" className="space-y-0">
+          <TabsContent value="batch" className="seamless-section">
             <BatchScoreInput
               value={batchInput}
               onChange={setBatchInput}

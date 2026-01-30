@@ -30,33 +30,31 @@ export function EnrichedDataCard({ data }: EnrichedDataCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-card overflow-hidden"
+      className="fluid-section"
     >
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-border/50 bg-success/5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center h-6 w-6 rounded-full bg-success/20">
-              <Check className="h-3.5 w-3.5 text-success" />
-            </div>
-            <span className="text-sm font-medium text-success">Auto-Enriched</span>
+      {/* Header - minimal, inline status */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center h-6 w-6 rounded-full bg-success/20">
+            <Check className="h-3.5 w-3.5 text-success" />
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Link className="h-3 w-3" />
-            <a 
-              href={data.website} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-primary truncate max-w-[200px]"
-            >
-              {data.website.replace(/^https?:\/\//, '')}
-            </a>
-          </div>
+          <span className="text-sm font-medium text-success">Auto-Enriched</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Link className="h-3 w-3" />
+          <a 
+            href={data.website} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:text-primary truncate max-w-[200px]"
+          >
+            {data.website.replace(/^https?:\/\//, '')}
+          </a>
         </div>
       </div>
 
       {/* Company Info */}
-      <div className="p-4 space-y-4">
+      <div className="space-y-4">
         <div>
           <h3 className="font-display text-xl font-bold text-foreground">
             {data.companyName}
@@ -66,13 +64,10 @@ export function EnrichedDataCard({ data }: EnrichedDataCardProps) {
           </p>
         </div>
 
-        {/* Data Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {/* Data Grid - flowing, minimal boxes */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3">
           {fields.map((field) => (
-            <div 
-              key={field.label}
-              className="flex items-start gap-2 p-2 rounded-lg bg-secondary/30"
-            >
+            <div key={field.label} className="flex items-start gap-2">
               <field.icon className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">{field.label}</p>
@@ -111,27 +106,22 @@ export function EnrichedDataCard({ data }: EnrichedDataCardProps) {
         )}
       </div>
 
-      {/* Footer with Data Sources */}
-      <div className="px-4 py-2 border-t border-border/50 bg-secondary/20">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Sparkles className="h-3 w-3" />
-            <span>Waterfall enrichment</span>
-          </div>
-          {data.dataSources && data.dataSources.length > 0 && (
-            <div className="flex items-center gap-1">
-              {data.dataSources.map((source) => (
-                <Badge 
-                  key={source} 
-                  variant="outline" 
-                  className="text-[10px] px-1.5 py-0 h-5 bg-background"
-                >
-                  {source}
-                </Badge>
-              ))}
-            </div>
-          )}
+      {/* Footer - subtle divider */}
+      <div className="organic-divider !my-4" />
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5">
+          <Sparkles className="h-3 w-3" />
+          <span>Waterfall enrichment</span>
         </div>
+        {data.dataSources && data.dataSources.length > 0 && (
+          <div className="flex items-center gap-1">
+            {data.dataSources.map((source) => (
+              <span key={source} className="px-2 py-0.5 rounded-full bg-secondary/50 text-muted-foreground">
+                {source}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </motion.div>
   );

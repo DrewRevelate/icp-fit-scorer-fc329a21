@@ -108,15 +108,15 @@ export default function SetupPage() {
         </TabsList>
 
         {/* AI Scoring Tab */}
-        <TabsContent value="ai-scoring" className="space-y-6">
-          {/* Scoring Mode Toggle */}
+        <TabsContent value="ai-scoring" className="space-y-8">
+          {/* Scoring Mode Toggle - no card */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="fluid-card p-6"
+            className="fluid-section"
           >
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="font-semibold text-foreground flex items-center gap-2">
                   Scoring Framework
@@ -130,13 +130,13 @@ export default function SetupPage() {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex gap-4">
               <button
                 onClick={() => handleModeChange('standard')}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${
+                className={`flex-1 p-5 rounded-2xl text-left transition-all ${
                   scoringMode === 'standard'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border bg-secondary/30 hover:border-primary/50'
+                    ? 'bg-primary/10 ring-2 ring-primary/30'
+                    : 'bg-secondary/20 hover:bg-secondary/30'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -150,10 +150,10 @@ export default function SetupPage() {
               
               <button
                 onClick={() => handleModeChange('advanced')}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${
+                className={`flex-1 p-5 rounded-2xl text-left transition-all ${
                   scoringMode === 'advanced'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border bg-secondary/30 hover:border-primary/50'
+                    ? 'bg-primary/10 ring-2 ring-primary/30'
+                    : 'bg-secondary/20 hover:bg-secondary/30'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -163,7 +163,7 @@ export default function SetupPage() {
                 <p className="text-xs text-muted-foreground">
                   -5 to +5 discrete scores only. Forces clear fit/no-fit decisions.
                 </p>
-                <div className="flex gap-1 mt-2">
+                <div className="flex gap-1 mt-3">
                   {[-5, -3, -1, 1, 3, 5].map((score) => (
                     <span 
                       key={score}
@@ -179,25 +179,28 @@ export default function SetupPage() {
             </div>
           </motion.div>
 
+          {/* Weight Status - minimal inline banner */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className={`text-center p-4 rounded-lg border ${
+            className={`text-center py-3 px-4 rounded-full inline-flex items-center gap-2 mx-auto ${
               isValidWeight 
-                ? 'bg-success/10 border-success/30 text-success' 
-                : 'bg-destructive/10 border-destructive/30 text-destructive'
+                ? 'bg-success/10 text-success' 
+                : 'bg-destructive/10 text-destructive'
             }`}
+            style={{ display: 'block', width: 'fit-content', margin: '0 auto' }}
           >
             <span className="font-semibold">Total Weight: {totalWeight}%</span>
             {!isValidWeight && (
-              <span className="ml-2 text-sm">
+              <span className="text-sm ml-2">
                 ({totalWeight < 100 ? `${100 - totalWeight}% remaining` : `${totalWeight - 100}% over`})
               </span>
             )}
           </motion.div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          {/* Criteria - flowing list, no cards */}
+          <div className="fluid-container">
             {criteria.map((criterion, index) => (
               <CriteriaWeightSlider
                 key={criterion.id}

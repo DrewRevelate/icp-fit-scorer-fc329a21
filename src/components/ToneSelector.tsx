@@ -18,13 +18,13 @@ const iconMap = {
 
 export function ToneSelector({ value, onChange, disabled }: ToneSelectorProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <Label className="text-sm font-medium text-foreground">Outreach Tone</Label>
       <RadioGroup
         value={value}
         onValueChange={(v) => onChange(v as OutreachTone)}
         disabled={disabled}
-        className="grid grid-cols-3 gap-3"
+        className="flex gap-3"
       >
         {TONE_DEFINITIONS.map((tone) => {
           const Icon = iconMap[tone.icon as keyof typeof iconMap];
@@ -35,16 +35,16 @@ export function ToneSelector({ value, onChange, disabled }: ToneSelectorProps) {
               key={tone.id}
               htmlFor={tone.id}
               className={cn(
-                "flex flex-col items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all",
+                "flex items-center gap-2 px-4 py-2.5 rounded-full cursor-pointer transition-all",
                 isSelected 
-                  ? "border-primary bg-primary/10 text-primary" 
-                  : "border-border bg-secondary/30 hover:border-primary/50 hover:bg-secondary/50",
+                  ? "bg-primary/15 text-primary ring-1 ring-primary/30" 
+                  : "bg-secondary/30 hover:bg-secondary/50 text-muted-foreground hover:text-foreground",
                 disabled && "opacity-50 cursor-not-allowed"
               )}
             >
               <RadioGroupItem value={tone.id} id={tone.id} className="sr-only" />
               <Icon className={cn(
-                "h-5 w-5",
+                "h-4 w-4",
                 isSelected ? "text-primary" : "text-muted-foreground"
               )} />
               <span className={cn(
@@ -52,9 +52,6 @@ export function ToneSelector({ value, onChange, disabled }: ToneSelectorProps) {
                 isSelected ? "text-primary" : "text-foreground"
               )}>
                 {tone.name}
-              </span>
-              <span className="text-xs text-muted-foreground text-center leading-tight">
-                {tone.description}
               </span>
             </Label>
           );

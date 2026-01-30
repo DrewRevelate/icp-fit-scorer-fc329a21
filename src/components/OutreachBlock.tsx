@@ -116,82 +116,84 @@ ${outreach.cta}`;
 
   return (
     <motion.div
-      className="glass-card overflow-hidden"
+      className="fluid-section"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6, duration: 0.4 }}
     >
-      <div className="border-b border-border/50 bg-primary/5 px-5 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Mail className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold text-foreground">Outreach Block</h3>
+      {/* Header - minimal, flowing */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <Mail className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-display text-xl font-semibold text-foreground">Outreach Block</h3>
             {activeTone && (
-              <Badge variant="outline" className="text-xs capitalize">
-                {activeTone}
-              </Badge>
+              <span className="text-xs text-muted-foreground capitalize">{activeTone} tone</span>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            {onRegenerate && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={isRegenerating}
-                    className="gap-2"
+        </div>
+        <div className="flex items-center gap-2">
+          {onRegenerate && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={isRegenerating}
+                  className="gap-2 text-muted-foreground hover:text-foreground"
+                >
+                  {isRegenerating ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Regenerating...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-3 w-3" />
+                      Regenerate
+                    </>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {TONE_DEFINITIONS.map((tone) => (
+                  <DropdownMenuItem
+                    key={tone.id}
+                    onClick={() => handleRegenerate(tone.id)}
+                    className="flex flex-col items-start gap-0.5"
                   >
-                    {isRegenerating ? (
-                      <>
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        Regenerating...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw className="h-3 w-3" />
-                        Regenerate
-                      </>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {TONE_DEFINITIONS.map((tone) => (
-                    <DropdownMenuItem
-                      key={tone.id}
-                      onClick={() => handleRegenerate(tone.id)}
-                      className="flex flex-col items-start gap-0.5"
-                    >
-                      <span className="font-medium">{tone.name}</span>
-                      <span className="text-xs text-muted-foreground">{tone.description}</span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <span className="font-medium">{tone.name}</span>
+                    <span className="text-xs text-muted-foreground">{tone.description}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCopyAll}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+          >
+            {copiedField === 'all' ? (
+              <>
+                <Check className="h-3 w-3" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3" />
+                Copy All
+              </>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCopyAll}
-              className="gap-2"
-            >
-              {copiedField === 'all' ? (
-                <>
-                  <Check className="h-3 w-3" />
-                  Copied All
-                </>
-              ) : (
-                <>
-                  <Copy className="h-3 w-3" />
-                  Copy All
-                </>
-              )}
-            </Button>
-          </div>
+          </Button>
         </div>
       </div>
       
-      <div className="divide-y divide-border/30">
+      {/* Sections - flowing inline rows */}
+      <div className="space-y-0">
         {sections.map((section, index) => {
           const Icon = section.icon;
           return (
@@ -200,42 +202,39 @@ ${outreach.cta}`;
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7 + index * 0.1 }}
-              className="p-4 hover:bg-secondary/20 transition-colors group"
+              className="inline-row group"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className={`mt-0.5 ${section.color}`}>
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-                      {section.label}
-                    </p>
-                    <p className="text-foreground leading-relaxed">
-                      {section.content}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleCopy(section.content, section.id)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 shrink-0"
-                >
-                  {copiedField === section.id ? (
-                    <Check className="h-3 w-3 text-success" />
-                  ) : (
-                    <Copy className="h-3 w-3" />
-                  )}
-                </Button>
+              <div className={`shrink-0 ${section.color}`}>
+                <Icon className="h-4 w-4" />
               </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                  {section.label}
+                </p>
+                <p className="text-foreground leading-relaxed">
+                  {section.content}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleCopy(section.content, section.id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 shrink-0"
+              >
+                {copiedField === section.id ? (
+                  <Check className="h-3 w-3 text-success" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
+              </Button>
             </motion.div>
           );
         })}
       </div>
       
-      <div className="px-5 py-3 bg-secondary/30 border-t border-border/50">
-        <p className="text-xs text-muted-foreground text-center">
+      {/* Footer - subtle, no box */}
+      <div className="mt-6 text-center">
+        <p className="text-xs text-muted-foreground">
           Personalized for <span className="font-medium text-foreground">{companyName}</span>
         </p>
       </div>

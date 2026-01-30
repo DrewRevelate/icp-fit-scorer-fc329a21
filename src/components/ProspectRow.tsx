@@ -38,13 +38,13 @@ export function ProspectRow({
 
   return (
     <motion.div
-      className="glass-card overflow-hidden"
+      className="relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       layout
     >
       <div 
-        className="flex items-center gap-4 p-4 cursor-pointer hover:bg-secondary/30 transition-colors"
+        className="inline-row cursor-pointer group"
         onClick={() => setExpanded(!expanded)}
       >
         {onToggleCompare && (
@@ -60,7 +60,7 @@ export function ProspectRow({
         )}
         
         {/* Tier Badge */}
-        <div className={`flex items-center justify-center h-10 w-10 rounded-lg ${colors.bg}`}>
+        <div className={`flex items-center justify-center h-10 w-10 rounded-xl ${colors.bg}`}>
           <span className={`font-display text-xl font-bold ${colors.text}`}>
             {prospect.tier}
           </span>
@@ -91,7 +91,7 @@ export function ProspectRow({
             e.stopPropagation();
             onDelete(prospect.id);
           }}
-          className="text-muted-foreground hover:text-destructive"
+          className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -109,20 +109,19 @@ export function ProspectRow({
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="border-t border-border/50 bg-secondary/20 p-4 space-y-4"
+          className="pl-14 pr-4 pb-6 space-y-6"
         >
-          {/* Receipt-style signal breakdown */}
-          <div className="glass-card overflow-hidden">
-            <div className="px-4 py-2 border-b border-border/50 bg-secondary/30 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground font-mono">SIGNAL BREAKDOWN</span>
+          {/* Signal breakdown - no card wrapper */}
+          <div className="pt-4">
+            <div className="flex items-center justify-between mb-4">
+              <span className="section-label">Signal Breakdown</span>
               {prospect.scoringMode === 'advanced' && (
                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">GTM Partners</Badge>
               )}
             </div>
-            <div className="px-4 py-2">
+            <div className="space-y-0">
               {[...prospect.criteriaBreakdown]
                 .sort((a, b) => {
-                  // Sort by advancedScore if available, otherwise by percentage
                   if (prospect.scoringMode === 'advanced' && a.advancedScore !== undefined && b.advancedScore !== undefined) {
                     return b.advancedScore - a.advancedScore;
                   }
@@ -147,7 +146,7 @@ export function ProspectRow({
                   return (
                     <div
                       key={criteria.criteriaId}
-                      className="flex items-center justify-between py-2.5 border-b border-border/30 last:border-0"
+                      className="flex items-center justify-between py-3 border-b border-border/30 last:border-0"
                     >
                       <div className="flex-1 min-w-0">
                         <span className="text-sm font-medium text-foreground">{criteria.criteriaName}</span>
@@ -169,7 +168,10 @@ export function ProspectRow({
                   );
                 })}
             </div>
-            <div className="px-4 py-2 border-t border-border bg-secondary/50 flex justify-between items-center">
+            
+            {/* Total */}
+            <div className="organic-divider !my-4" />
+            <div className="flex justify-between items-center">
               <span className="text-xs font-semibold">
                 {prospect.scoringMode === 'advanced' ? 'Net Score' : 'Total'}
               </span>
@@ -193,31 +195,30 @@ export function ProspectRow({
             </div>
           </div>
           
-          {prospect.outreach ? (
-            <div className="space-y-3">
-              <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Subject</p>
-                <p className="text-foreground font-medium">{prospect.outreach.subjectLine}</p>
+          {/* Outreach - flowing sections */}
+          <div className="space-y-4">
+            <span className="section-label">Outreach</span>
+            {prospect.outreach ? (
+              <div className="space-y-3">
+                {[
+                  { label: 'Subject', content: prospect.outreach.subjectLine, color: 'text-primary' },
+                  { label: 'Opening', content: prospect.outreach.openingLine, color: 'text-success' },
+                  { label: 'Value Hook', content: prospect.outreach.valueHook, color: 'text-warning' },
+                  { label: 'CTA', content: prospect.outreach.cta, color: 'text-primary' },
+                ].map((item) => (
+                  <div key={item.label} className="py-2 border-b border-border/20 last:border-0">
+                    <p className={`text-xs font-medium uppercase tracking-wide mb-1 ${item.color}`}>{item.label}</p>
+                    <p className="text-foreground text-sm">{item.content}</p>
+                  </div>
+                ))}
               </div>
-              <div className="p-3 rounded-lg bg-success/5 border border-success/20">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Opening</p>
-                <p className="text-foreground">{prospect.outreach.openingLine}</p>
+            ) : (
+              <div className="py-2">
+                <p className="text-sm text-muted-foreground mb-1">Opening Line</p>
+                <p className="text-foreground italic">"{prospect.openingLine}"</p>
               </div>
-              <div className="p-3 rounded-lg bg-warning/5 border border-warning/20">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Value Hook</p>
-                <p className="text-foreground">{prospect.outreach.valueHook}</p>
-              </div>
-              <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">CTA</p>
-                <p className="text-foreground">{prospect.outreach.cta}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="text-sm text-muted-foreground mb-1">Opening Line:</p>
-              <p className="text-foreground italic">"{prospect.openingLine}"</p>
-            </div>
-          )}
+            )}
+          </div>
         </motion.div>
       )}
     </motion.div>

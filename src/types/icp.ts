@@ -1,4 +1,5 @@
 export type ScoringMode = 'standard' | 'advanced';
+export type OutreachTone = 'casual' | 'formal' | 'challenger';
 
 export interface ICPCriteria {
   id: string;
@@ -80,6 +81,35 @@ export interface OutreachBlock {
   cta: string;
 }
 
+// Tone definitions for outreach
+export interface ToneDefinition {
+  id: OutreachTone;
+  name: string;
+  description: string;
+  icon: string;
+}
+
+export const TONE_DEFINITIONS: ToneDefinition[] = [
+  {
+    id: 'casual',
+    name: 'Casual',
+    description: 'Friendly, conversational, peer-to-peer vibe',
+    icon: 'Smile',
+  },
+  {
+    id: 'formal',
+    name: 'Formal',
+    description: 'Professional, polished, enterprise-ready',
+    icon: 'Briefcase',
+  },
+  {
+    id: 'challenger',
+    name: 'Challenger',
+    description: 'Bold, provocative, pattern-interrupt style',
+    icon: 'Zap',
+  },
+];
+
 export interface ProspectScore {
   id: string;
   companyName: string;
@@ -90,6 +120,7 @@ export interface ProspectScore {
   criteriaBreakdown: CriteriaScore[];
   openingLine: string; // Legacy compatibility
   outreach?: OutreachBlock; // Full outreach block
+  outreachTone?: OutreachTone; // Tone used for outreach
   createdAt: string;
 }
 

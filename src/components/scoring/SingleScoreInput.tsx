@@ -2,15 +2,16 @@ import { useState, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Sparkles, RotateCcw, Loader2, Link, Wand2 } from 'lucide-react';
-import { EnrichedCompany } from '@/types/icp';
+import { EnrichedCompany, OutreachTone } from '@/types/icp';
 import { EnrichedDataCard } from './EnrichedDataCard';
+import { ToneSelector } from '@/components/ToneSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface SingleScoreInputProps {
   value: string;
   onChange: (value: string) => void;
-  onScore: () => void;
+  onScore: (tone: OutreachTone) => void;
   onReset: () => void;
   isScoring: boolean;
   hasResult: boolean;
@@ -42,6 +43,7 @@ export function SingleScoreInput({
 }: SingleScoreInputProps) {
   const [isEnriching, setIsEnriching] = useState(false);
   const [detectedUrl, setDetectedUrl] = useState<string | null>(null);
+  const [selectedTone, setSelectedTone] = useState<OutreachTone>('casual');
 
   // Detect URL in input
   useEffect(() => {
@@ -156,6 +158,13 @@ Examples:
         </div>
       )}
 
+      {/* Tone Selector */}
+      <ToneSelector
+        value={selectedTone}
+        onChange={setSelectedTone}
+        disabled={isScoring || isEnriching}
+      />
+
       {/* Action Buttons */}
       <div className="flex gap-3 justify-end">
         {(hasResult || enrichedData) && (
@@ -170,7 +179,7 @@ Examples:
         )}
         
         <Button
-          onClick={onScore}
+          onClick={() => onScore(selectedTone)}
           disabled={isScoring || isEnriching || !value.trim()}
           className="gap-2 bg-primary hover:bg-primary/90 min-w-[140px]"
         >

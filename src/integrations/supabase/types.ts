@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      scoring_rules: {
+        Row: {
+          category: Database["public"]["Enums"]["rule_category"]
+          condition_type: Database["public"]["Enums"]["condition_type"]
+          condition_value: string
+          created_at: string
+          description: string | null
+          enabled: boolean
+          id: string
+          name: string
+          points: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["rule_category"]
+          condition_type: Database["public"]["Enums"]["condition_type"]
+          condition_value: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name: string
+          points: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["rule_category"]
+          condition_type?: Database["public"]["Enums"]["condition_type"]
+          condition_value?: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name?: string
+          points?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      scoring_settings: {
+        Row: {
+          created_at: string
+          id: string
+          qualification_threshold: number
+          rule_based_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          qualification_threshold?: number
+          rule_based_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          qualification_threshold?: number
+          rule_based_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +88,19 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      condition_type:
+        | "job_title_contains"
+        | "email_domain_personal"
+        | "email_domain_business"
+        | "company_size_range"
+        | "industry_matches"
+        | "visited_pricing_page"
+        | "visited_product_page"
+        | "blog_only_engagement"
+        | "funding_stage"
+        | "region_matches"
+        | "custom"
+      rule_category: "demographic" | "firmographic" | "behavioral"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +227,21 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      condition_type: [
+        "job_title_contains",
+        "email_domain_personal",
+        "email_domain_business",
+        "company_size_range",
+        "industry_matches",
+        "visited_pricing_page",
+        "visited_product_page",
+        "blog_only_engagement",
+        "funding_stage",
+        "region_matches",
+        "custom",
+      ],
+      rule_category: ["demographic", "firmographic", "behavioral"],
+    },
   },
 } as const

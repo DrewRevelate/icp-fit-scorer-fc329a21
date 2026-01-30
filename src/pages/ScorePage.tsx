@@ -36,6 +36,7 @@ export default function ScorePage() {
   const [failedCompanies, setFailedCompanies] = useState<string[]>([]);
   const [batchProgress, setBatchProgress] = useState({ completed: 0, failed: 0, current: '' });
   const [showBatchResults, setShowBatchResults] = useState(false);
+  const [batchEnrichedCompanies, setBatchEnrichedCompanies] = useState<EnrichedCompany[]>([]);
 
   const companies = useMemo(() => {
     return batchInput
@@ -195,6 +196,7 @@ export default function ScorePage() {
     setBatchResults([]);
     setFailedCompanies([]);
     setShowBatchResults(false);
+    setBatchEnrichedCompanies([]);
   };
 
   return (
@@ -256,6 +258,8 @@ export default function ScorePage() {
               isScoring={isBatchScoring}
               hasResults={showBatchResults}
               companyCount={companies.length}
+              enrichedCompanies={batchEnrichedCompanies}
+              onEnrichedCompanies={setBatchEnrichedCompanies}
             />
           </TabsContent>
         </Tabs>

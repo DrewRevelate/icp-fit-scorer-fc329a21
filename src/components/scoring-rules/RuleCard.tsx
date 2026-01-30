@@ -12,9 +12,10 @@ interface RuleCardProps {
   onToggle: (id: string, enabled: boolean) => void;
   onEdit: (rule: ScoringRule) => void;
   onDelete: (id: string) => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
-export function RuleCard({ rule, index, onToggle, onEdit, onDelete }: RuleCardProps) {
+export function RuleCard({ rule, index, onToggle, onEdit, onDelete, dragHandleProps }: RuleCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -23,7 +24,10 @@ export function RuleCard({ rule, index, onToggle, onEdit, onDelete }: RuleCardPr
       className={`glass-card p-4 ${!rule.enabled ? 'opacity-60' : ''}`}
     >
       <div className="flex items-start gap-3">
-        <div className="flex items-center gap-2 pt-1 text-muted-foreground cursor-grab">
+        <div 
+          className="flex items-center gap-2 pt-1 text-muted-foreground cursor-grab active:cursor-grabbing hover:text-foreground transition-colors"
+          {...dragHandleProps}
+        >
           <GripVertical className="h-4 w-4" />
         </div>
 

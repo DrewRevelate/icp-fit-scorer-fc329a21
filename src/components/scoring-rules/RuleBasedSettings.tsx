@@ -1,8 +1,23 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { useScoringRules } from '@/hooks/useScoringRules';
 import { ScoringRule } from '@/types/scoring-rules';
-import { RuleCard } from './RuleCard';
+import { SortableRuleCard } from './SortableRuleCard';
 import { RuleEditor } from './RuleEditor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,6 +46,7 @@ export function RuleBasedSettings() {
     updateRule,
     deleteRule,
     toggleRuleEnabled,
+    reorderRules,
     toggleRuleBasedScoring,
     setQualificationThreshold,
   } = useScoringRules();
@@ -40,6 +56,31 @@ export function RuleBasedSettings() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [thresholdInput, setThresholdInput] = useState(settings?.qualification_threshold?.toString() || '50');
   const [isUpdatingThreshold, setIsUpdatingThreshold] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = rules.findIndex((r) => r.id === active.id);
+      const newIndex = rules.findIndex((r) => r.id === over.id);
+      const reordered = arrayMove(rules, oldIndex, newIndex).map((rule, index) => ({
+        ...rule,
+        sort_order: index + 1,
+      }));
+      reorderRules(reordered);
+    }
+  };
 
   const handleCreateRule = () => {
     setEditingRule(null);
@@ -174,16 +215,27 @@ export function RuleBasedSettings() {
             </Button>
           </motion.div>
         ) : (
-          rules.map((rule, index) => (
-            <RuleCard
-              key={rule.id}
-              rule={rule}
-              index={index}
-              onToggle={toggleRuleEnabled}
-              onEdit={handleEditRule}
-              onDelete={(id) => setDeleteConfirmId(id)}
-            />
-          ))
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={rules.map(r => r.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {rules.map((rule, index) => (
+                <SortableRuleCard
+                  key={rule.id}
+                  rule={rule}
+                  index={index}
+                  onToggle={toggleRuleEnabled}
+                  onEdit={handleEditRule}
+                  onDelete={(id) => setDeleteConfirmId(id)}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
         )}
       </div>
 

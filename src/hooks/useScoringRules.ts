@@ -134,6 +134,29 @@ export function useScoringRules() {
     return updateRule(id, { enabled });
   };
 
+  const reorderRules = async (reorderedRules: ScoringRule[]) => {
+    // Optimistically update local state
+    setRules(reorderedRules);
+    
+    try {
+      // Update sort_order for each rule in the database
+      const updates = reorderedRules.map((rule, index) => 
+        supabase
+          .from('scoring_rules')
+          .update({ sort_order: index + 1 })
+          .eq('id', rule.id)
+      );
+      
+      await Promise.all(updates);
+      toast.success('Rules reordered successfully');
+    } catch (err) {
+      console.error('Error reordering rules:', err);
+      toast.error('Failed to reorder rules');
+      // Refetch to restore correct order on error
+      fetchRules();
+    }
+  };
+
   const updateSettings = async (updates: Partial<ScoringSettings>) => {
     try {
       if (!settings?.id) {
@@ -188,6 +211,7 @@ export function useScoringRules() {
     updateRule,
     deleteRule,
     toggleRuleEnabled,
+    reorderRules,
     toggleRuleBasedScoring,
     setQualificationThreshold,
   };

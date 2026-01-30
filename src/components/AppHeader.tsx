@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { Target, Settings, Users, Zap } from 'lucide-react';
+import { Target, Settings, Users } from 'lucide-react';
+import fitchLogo from '@/assets/fitch-logo.png';
 
 const navItems = [
   { path: '/', label: 'Score', icon: Target },
@@ -14,17 +15,14 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur-xl">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-3">
-          <motion.div
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Zap className="h-5 w-5 text-primary-foreground" />
-          </motion.div>
-          <span className="text-xl font-display font-semibold tracking-tight text-foreground">
-            FitCheck
-          </span>
+        <Link to="/" className="flex items-center gap-2">
+          <motion.img
+            src={fitchLogo}
+            alt="Fitch"
+            className="h-10 w-auto"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          />
         </Link>
 
         <nav className="flex items-center gap-1">

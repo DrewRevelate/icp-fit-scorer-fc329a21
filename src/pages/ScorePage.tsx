@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { ScoreGauge } from '@/components/ScoreGauge';
-import { CriteriaCard } from '@/components/CriteriaCard';
-import { OpeningLineCard } from '@/components/OpeningLineCard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SingleScoreInput } from '@/components/scoring/SingleScoreInput';
+import { BatchScoreInput } from '@/components/scoring/BatchScoreInput';
+import { BatchProgress } from '@/components/scoring/BatchProgress';
+import { BatchResults } from '@/components/scoring/BatchResults';
+import { ScoreResult } from '@/components/scoring/ScoreResult';
+import { ScoringLoader } from '@/components/scoring/ScoringLoader';
 import { useICPStore } from '@/stores/icpStore';
 import { ProspectScore, getScoreCategory, CriteriaScore } from '@/types/icp';
-import { Target, Sparkles, Save, RotateCcw, Loader2 } from 'lucide-react';
+import { Target, User, Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -20,11 +22,57 @@ interface AIScoreResponse {
 
 export default function ScorePage() {
   const { criteria, addProspect } = useICPStore();
+  
+  // Single mode state
   const [companyInfo, setCompanyInfo] = useState('');
   const [isScoring, setIsScoring] = useState(false);
   const [result, setResult] = useState<ProspectScore | null>(null);
+  
+  // Batch mode state
+  const [batchInput, setBatchInput] = useState('');
+  const [isBatchScoring, setIsBatchScoring] = useState(false);
+  const [batchResults, setBatchResults] = useState<ProspectScore[]>([]);
+  const [failedCompanies, setFailedCompanies] = useState<string[]>([]);
+  const [batchProgress, setBatchProgress] = useState({ completed: 0, failed: 0, current: '' });
+  const [showBatchResults, setShowBatchResults] = useState(false);
 
-  const handleScore = async () => {
+  const companies = useMemo(() => {
+    return batchInput
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+  }, [batchInput]);
+
+  const scoreCompany = async (companyInfo: string): Promise<ProspectScore | null> => {
+    const { data, error } = await supabase.functions.invoke<AIScoreResponse>('score-prospect', {
+      body: { 
+        companyInfo, 
+        criteria: criteria.map(c => ({
+          id: c.id,
+          name: c.name,
+          weight: c.weight,
+          description: c.description,
+        }))
+      },
+    });
+
+    if (error || !data) {
+      throw new Error(error?.message || 'Failed to score prospect');
+    }
+
+    return {
+      id: crypto.randomUUID(),
+      companyName: data.companyName,
+      companyDescription: companyInfo,
+      totalScore: data.totalScore,
+      scoreCategory: getScoreCategory(data.totalScore),
+      criteriaBreakdown: data.criteriaBreakdown,
+      openingLine: data.openingLine,
+      createdAt: new Date().toISOString(),
+    };
+  };
+
+  const handleSingleScore = async () => {
     if (!companyInfo.trim()) {
       toast({
         title: 'Input Required',
@@ -38,37 +86,7 @@ export default function ScorePage() {
     setResult(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke<AIScoreResponse>('score-prospect', {
-        body: { 
-          companyInfo, 
-          criteria: criteria.map(c => ({
-            id: c.id,
-            name: c.name,
-            weight: c.weight,
-            description: c.description,
-          }))
-        },
-      });
-
-      if (error) {
-        throw new Error(error.message || 'Failed to score prospect');
-      }
-
-      if (!data) {
-        throw new Error('No data returned from scoring');
-      }
-
-      const prospect: ProspectScore = {
-        id: crypto.randomUUID(),
-        companyName: data.companyName,
-        companyDescription: companyInfo,
-        totalScore: data.totalScore,
-        scoreCategory: getScoreCategory(data.totalScore),
-        criteriaBreakdown: data.criteriaBreakdown,
-        openingLine: data.openingLine,
-        createdAt: new Date().toISOString(),
-      };
-
+      const prospect = await scoreCompany(companyInfo);
       setResult(prospect);
     } catch (err) {
       console.error('Scoring error:', err);
@@ -82,7 +100,60 @@ export default function ScorePage() {
     }
   };
 
-  const handleSave = () => {
+  const handleBatchScore = async () => {
+    if (companies.length === 0) {
+      toast({
+        title: 'Input Required',
+        description: 'Please enter at least one company.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsBatchScoring(true);
+    setBatchResults([]);
+    setFailedCompanies([]);
+    setBatchProgress({ completed: 0, failed: 0, current: '' });
+    setShowBatchResults(false);
+
+    const results: ProspectScore[] = [];
+    const failed: string[] = [];
+
+    for (let i = 0; i < companies.length; i++) {
+      const company = companies[i];
+      setBatchProgress(prev => ({ ...prev, current: company }));
+
+      try {
+        const prospect = await scoreCompany(company);
+        if (prospect) {
+          results.push(prospect);
+          setBatchProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
+        }
+      } catch (err) {
+        console.error(`Failed to score ${company}:`, err);
+        failed.push(company);
+        setBatchProgress(prev => ({ ...prev, failed: prev.failed + 1 }));
+      }
+
+      // Small delay between requests to avoid rate limiting
+      if (i < companies.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+
+    setBatchResults(results);
+    setFailedCompanies(failed);
+    setIsBatchScoring(false);
+    setBatchProgress(prev => ({ ...prev, current: '' }));
+    setShowBatchResults(true);
+
+    toast({
+      title: 'Batch Scoring Complete',
+      description: `Scored ${results.length} companies successfully${failed.length > 0 ? `, ${failed.length} failed` : ''}.`,
+    });
+  };
+
+  const handleSaveSingle = () => {
     if (result) {
       addProspect(result);
       toast({
@@ -92,9 +163,32 @@ export default function ScorePage() {
     }
   };
 
-  const handleReset = () => {
+  const handleSaveOne = (prospect: ProspectScore) => {
+    addProspect(prospect);
+    toast({
+      title: 'Prospect Saved',
+      description: `${prospect.companyName} has been added to your prospects.`,
+    });
+  };
+
+  const handleSaveAll = () => {
+    batchResults.forEach(prospect => addProspect(prospect));
+    toast({
+      title: 'All Prospects Saved',
+      description: `${batchResults.length} companies have been added to your prospects.`,
+    });
+  };
+
+  const handleResetSingle = () => {
     setCompanyInfo('');
     setResult(null);
+  };
+
+  const handleResetBatch = () => {
+    setBatchInput('');
+    setBatchResults([]);
+    setFailedCompanies([]);
+    setShowBatchResults(false);
   };
 
   return (
@@ -109,10 +203,10 @@ export default function ScorePage() {
             <Target className="h-8 w-8 text-primary" />
           </div>
         </div>
-        <h1 className="text-4xl font-bold gradient-text">Score a Prospect</h1>
+        <h1 className="text-4xl font-bold gradient-text">Score Prospects</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Paste a company name, website, or description to instantly analyze 
-          their fit against your ICP criteria using AI.
+          Analyze one company in detail or score multiple prospects at once 
+          against your ICP criteria using AI.
         </p>
       </motion.div>
 
@@ -120,116 +214,73 @@ export default function ScorePage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass-card p-6 space-y-4"
+        className="glass-card p-6"
       >
-        <Textarea
-          placeholder="Enter company name, paste their website URL, or describe the company...
+        <Tabs defaultValue="single" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+            <TabsTrigger value="single" className="gap-2">
+              <User className="h-4 w-4" />
+              Single
+            </TabsTrigger>
+            <TabsTrigger value="batch" className="gap-2">
+              <Users className="h-4 w-4" />
+              Batch
+            </TabsTrigger>
+          </TabsList>
 
-Example:
-Acme Corp
-B2B SaaS company with 150 employees
-Series B, $25M ARR
-Based in San Francisco
-Tech stack: React, Node.js, AWS"
-          value={companyInfo}
-          onChange={(e) => setCompanyInfo(e.target.value)}
-          className="min-h-[160px] bg-secondary/50 border-border resize-none"
-          disabled={isScoring}
-        />
+          <TabsContent value="single" className="space-y-0">
+            <SingleScoreInput
+              value={companyInfo}
+              onChange={setCompanyInfo}
+              onScore={handleSingleScore}
+              onReset={handleResetSingle}
+              isScoring={isScoring}
+              hasResult={!!result}
+            />
+          </TabsContent>
 
-        <div className="flex gap-3 justify-end">
-          {result && (
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              className="gap-2"
-            >
-              <RotateCcw className="h-4 w-4" />
-              New Analysis
-            </Button>
-          )}
-          
-          <Button
-            onClick={handleScore}
-            disabled={isScoring || !companyInfo.trim()}
-            className="gap-2 bg-primary hover:bg-primary/90 min-w-[140px]"
-          >
-            {isScoring ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4" />
-                Score Prospect
-              </>
-            )}
-          </Button>
-        </div>
+          <TabsContent value="batch" className="space-y-0">
+            <BatchScoreInput
+              value={batchInput}
+              onChange={setBatchInput}
+              onScore={handleBatchScore}
+              onReset={handleResetBatch}
+              isScoring={isBatchScoring}
+              hasResults={showBatchResults}
+              companyCount={companies.length}
+            />
+          </TabsContent>
+        </Tabs>
       </motion.div>
 
+      {/* Single Mode Results */}
       <AnimatePresence mode="wait">
-        {isScoring && (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center py-16"
-          >
-            <div className="relative">
-              <div className="h-32 w-32 rounded-full border-4 border-primary/20 animate-pulse" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Loader2 className="h-12 w-12 text-primary animate-spin" />
-              </div>
-            </div>
-            <p className="mt-6 text-muted-foreground">AI is analyzing company fit...</p>
-          </motion.div>
-        )}
-
+        {isScoring && <ScoringLoader key="single-loading" />}
         {result && !isScoring && (
-          <motion.div
-            key="result"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-8"
-          >
-            {/* Score Display */}
-            <div className="flex flex-col items-center">
-              <ScoreGauge score={result.totalScore} />
-              
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
-                className="mt-6"
-              >
-                <Button
-                  onClick={handleSave}
-                  size="lg"
-                  className="gap-2 bg-primary hover:bg-primary/90"
-                >
-                  <Save className="h-5 w-5" />
-                  Save to Prospects
-                </Button>
-              </motion.div>
-            </div>
+          <ScoreResult key="single-result" result={result} onSave={handleSaveSingle} />
+        )}
+      </AnimatePresence>
 
-            {/* Criteria Breakdown */}
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-center">Criteria Breakdown</h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {result.criteriaBreakdown.map((criteria, index) => (
-                  <CriteriaCard key={criteria.criteriaId} criteria={criteria} index={index} />
-                ))}
-              </div>
-            </div>
-
-            {/* Opening Line */}
-            <OpeningLineCard line={result.openingLine} companyName={result.companyName} />
-          </motion.div>
+      {/* Batch Mode Progress & Results */}
+      <AnimatePresence mode="wait">
+        {isBatchScoring && (
+          <BatchProgress
+            key="batch-progress"
+            total={companies.length}
+            completed={batchProgress.completed}
+            failed={batchProgress.failed}
+            currentCompany={batchProgress.current}
+          />
+        )}
+        
+        {showBatchResults && !isBatchScoring && (
+          <BatchResults
+            key="batch-results"
+            results={batchResults}
+            failedCompanies={failedCompanies}
+            onSaveAll={handleSaveAll}
+            onSaveOne={handleSaveOne}
+          />
         )}
       </AnimatePresence>
     </div>

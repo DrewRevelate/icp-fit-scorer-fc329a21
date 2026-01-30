@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ScoreGauge } from '@/components/ScoreGauge';
-import { CriteriaCard } from '@/components/CriteriaCard';
+import { SignalBreakdown } from '@/components/SignalBreakdown';
 import { OpeningLineCard } from '@/components/OpeningLineCard';
 import { ProspectScore } from '@/types/icp';
 import { Save } from 'lucide-react';
@@ -40,15 +40,11 @@ export function ScoreResult({ result, onSave }: ScoreResultProps) {
         </motion.div>
       </div>
 
-      {/* Criteria Breakdown */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-center">Criteria Breakdown</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {result.criteriaBreakdown.map((criteria, index) => (
-            <CriteriaCard key={criteria.criteriaId} criteria={criteria} index={index} />
-          ))}
-        </div>
-      </div>
+      {/* Signal Breakdown - Receipt Style */}
+      <SignalBreakdown 
+        breakdown={result.criteriaBreakdown} 
+        totalScore={result.totalScore} 
+      />
 
       {/* Opening Line */}
       <OpeningLineCard line={result.openingLine} companyName={result.companyName} />

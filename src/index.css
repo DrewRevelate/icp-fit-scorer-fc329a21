@@ -2,64 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap');
 
 @layer base {
   :root {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-
-    --card: 222 47% 9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222 47% 9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 263 70% 58%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 222 47% 14%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 222 47% 14%;
-    --muted-foreground: 215 20% 55%;
-
-    --accent: 263 50% 25%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 210 40% 98%;
-
-    --warning: 45 93% 47%;
-    --warning-foreground: 222 47% 6%;
-
-    --border: 222 30% 18%;
-    --input: 222 30% 18%;
-    --ring: 263 70% 58%;
-
-    --radius: 0.75rem;
-
-    /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(263 70% 58%) 0%, hsl(280 70% 50%) 50%, hsl(300 60% 45%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(222 47% 11%) 0%, hsl(222 47% 8%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(263 70% 58% / 0.15) 0%, transparent 70%);
+    /* Revelate Brand System - Dark Mode */
     
-    /* Score colors */
-    --score-poor: 0 72% 51%;
-    --score-moderate: 45 93% 47%;
-    --score-strong: 142 71% 45%;
+    /* Background Colors */
+    --background: 240 6% 4%; /* #09090b */
+    --foreground: 40 6% 98%; /* #fafaf9 */
 
-    --sidebar-background: 222 47% 8%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 263 70% 58%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 222 47% 14%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 222 30% 18%;
-    --sidebar-ring: 263 70% 58%;
+    --card: 240 6% 6%; /* #0f0f11 */
+    --card-foreground: 40 6% 98%;
+
+    --popover: 240 6% 9%; /* #18181b */
+    --popover-foreground: 40 6% 98%;
+
+    /* Primary - Cyan Accent */
+    --primary: 187 82% 53%; /* #22d3ee */
+    --primary-foreground: 240 6% 4%;
+
+    /* Secondary */
+    --secondary: 240 6% 9%; /* #18181b */
+    --secondary-foreground: 40 6% 98%;
+
+    /* Muted */
+    --muted: 240 5% 26%; /* #3f3f46 */
+    --muted-foreground: 240 4% 46%; /* #71717a */
+
+    /* Accent - Purple Secondary */
+    --accent: 258 70% 76%; /* #a78bfa */
+    --accent-foreground: 240 6% 4%;
+
+    /* Semantic Colors */
+    --destructive: 0 72% 68%; /* #f87171 */
+    --destructive-foreground: 40 6% 98%;
+
+    --success: 142 69% 58%; /* #4ade80 */
+    --success-foreground: 240 6% 4%;
+
+    --warning: 45 93% 57%; /* #fbbf24 */
+    --warning-foreground: 240 6% 4%;
+
+    --info: 213 94% 68%; /* #60a5fa */
+    --info-foreground: 240 6% 4%;
+
+    /* Borders */
+    --border: 240 4% 16%; /* #27272a */
+    --input: 240 4% 16%;
+    --ring: 187 82% 53%;
+
+    --radius: 0.5rem;
+
+    /* Custom gradients - Cyan-based */
+    --gradient-primary: linear-gradient(135deg, hsl(187 82% 53%) 0%, hsl(258 70% 76%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(240 6% 8%) 0%, hsl(240 6% 5%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(187 82% 53% / 0.15) 0%, transparent 70%);
+    
+    /* Score colors - Aligned with Revelate semantic */
+    --score-poor: 0 72% 68%; /* error red */
+    --score-moderate: 45 93% 57%; /* warning yellow */
+    --score-strong: 142 69% 58%; /* success green */
+
+    /* Sidebar */
+    --sidebar-background: 240 6% 5%;
+    --sidebar-foreground: 40 6% 98%;
+    --sidebar-primary: 187 82% 53%;
+    --sidebar-primary-foreground: 240 6% 4%;
+    --sidebar-accent: 240 6% 9%;
+    --sidebar-accent-foreground: 40 6% 98%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 187 82% 53%;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.6);
+    --shadow-glow: 0 0 24px rgba(34,211,238,0.15);
   }
 }
 
@@ -69,14 +88,22 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Fraunces for headlines */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    text-wrap: balance;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
+    @apply bg-card border border-border/50 rounded-lg;
+    box-shadow: var(--shadow-md);
   }
 
   .gradient-text {
@@ -85,9 +112,10 @@
   }
 
   .glow-effect {
-    box-shadow: 0 0 40px hsl(263 70% 58% / 0.3), 0 0 80px hsl(263 70% 58% / 0.1);
+    box-shadow: var(--shadow-glow), 0 0 60px rgba(34,211,238,0.1);
   }
 
+  /* Score gauge styles */
   .score-gauge-track {
     stroke: hsl(var(--secondary));
   }
@@ -103,6 +131,18 @@
   .score-gauge-strong {
     stroke: hsl(var(--score-strong));
   }
+
+  /* Section label style - uppercase overline */
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-widest text-muted-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Lead text for hero paragraphs */
+  .lead-text {
+    @apply text-lg text-muted-foreground leading-relaxed;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
 }
 
 @layer utilities {
@@ -117,5 +157,18 @@
     50% {
       opacity: 1;
     }
+  }
+
+  /* Text colors matching Revelate hierarchy */
+  .text-primary-content {
+    color: hsl(var(--foreground));
+  }
+
+  .text-secondary-content {
+    color: hsl(0 0% 83%); /* #d4d4d4 */
+  }
+
+  .text-tertiary-content {
+    color: hsl(var(--muted-foreground));
   }
 }

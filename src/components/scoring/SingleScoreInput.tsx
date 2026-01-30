@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Sparkles, RotateCcw, Loader2, Link, Wand2 } from 'lucide-react';
+import { Sparkles, RotateCcw, Loader2, Link, Wand2, HelpCircle } from 'lucide-react';
 import { EnrichedCompany, OutreachTone } from '@/types/icp';
 import { EnrichedDataCard } from './EnrichedDataCard';
 import { ToneSelector } from '@/components/ToneSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface SingleScoreInputProps {
   value: string;
@@ -117,6 +118,21 @@ export function SingleScoreInput({
 
       {/* Input Area */}
       <div className="relative">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-sm font-medium text-foreground">Company Information</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
+                <HelpCircle className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="max-w-xs">
+              <p className="text-sm">
+                Enter a company URL (like stripe.com) to auto-enrich with data, or paste a description with details like industry, size, and funding stage.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <Textarea
           placeholder={enrichedData 
             ? "Enriched data loaded. Click 'Score Prospect' to analyze."

@@ -12,9 +12,10 @@ import { useScoringRules } from '@/hooks/useScoringRules';
 import { evaluateLeadAgainstRules } from '@/lib/rule-scoring-engine';
 import { ProspectScore, getTierFromScore, CriteriaScore, EnrichedCompany, ScoringMode, OutreachTone, OutreachBlock } from '@/types/icp';
 import { RuleBasedScore } from '@/types/scoring-rules';
-import { Target, User, Users } from 'lucide-react';
+import { Target, User, Users, HelpCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface AIScoreResponse {
   companyName: string;
@@ -268,16 +269,32 @@ export default function ScorePage() {
         className="fluid-card p-8"
       >
         <Tabs defaultValue="single" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto bg-secondary/30 p-1 rounded-xl">
-            <TabsTrigger value="single" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              <User className="h-4 w-4" />
-              Single
-            </TabsTrigger>
-            <TabsTrigger value="batch" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              <Users className="h-4 w-4" />
-              Batch
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-center gap-3">
+            <TabsList className="grid w-full grid-cols-2 max-w-sm bg-secondary/30 p-1 rounded-xl">
+              <TabsTrigger value="single" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
+                <User className="h-4 w-4" />
+                Single
+              </TabsTrigger>
+              <TabsTrigger value="batch" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
+                <Users className="h-4 w-4" />
+                Batch
+              </TabsTrigger>
+            </TabsList>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="text-muted-foreground hover:text-foreground transition-colors">
+                  <HelpCircle className="h-5 w-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-xs">
+                <p className="text-sm font-medium mb-1">Scoring Modes</p>
+                <p className="text-xs text-muted-foreground">
+                  <strong>Single:</strong> Analyze one company at a time with detailed results.
+                  <br /><strong>Batch:</strong> Process multiple companies at once for quick prioritization.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
 
           <TabsContent value="single" className="space-y-0">
             <SingleScoreInput

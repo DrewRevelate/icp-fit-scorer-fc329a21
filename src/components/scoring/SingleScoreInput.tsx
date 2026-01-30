@@ -110,64 +110,66 @@ export function SingleScoreInput({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       {/* Enriched Data Display */}
       {enrichedData && (
         <EnrichedDataCard data={enrichedData} />
       )}
 
-      {/* Input Area */}
-      <div className="relative">
-        <div className="flex items-center gap-2 mb-2">
+      {/* Input Area - seamless, ambient glow on focus */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">Company Information</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button className="text-muted-foreground hover:text-foreground transition-colors">
-                <HelpCircle className="h-4 w-4" />
+              <button className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                <HelpCircle className="h-3.5 w-3.5" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="right" className="max-w-xs">
               <p className="text-sm">
-                Enter a company URL (like stripe.com) to auto-enrich with data, or paste a description with details like industry, size, and funding stage.
+                Enter a company URL to auto-enrich, or paste a description with details like industry, size, and funding stage.
               </p>
             </TooltipContent>
           </Tooltip>
         </div>
-        <Textarea
-          placeholder={enrichedData 
-            ? "Enriched data loaded. Click 'Score Prospect' to analyze."
-            : `Paste a company URL to auto-enrich, or describe manually...
+        <div className="relative input-glow rounded-2xl transition-all duration-300">
+          <Textarea
+            placeholder={enrichedData 
+              ? "Enriched data loaded. Click 'Score Prospect' to analyze."
+              : `Paste a company URL to auto-enrich, or describe manually...
 
 Examples:
   stripe.com
   https://hubspot.com
   Acme Corp - B2B SaaS, 150 employees, Series B`}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="min-h-[120px] bg-secondary/50 border-border resize-none pr-4"
-          disabled={isScoring || isEnriching}
-        />
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="min-h-[140px] bg-secondary/30 border-border/30 resize-none rounded-2xl text-base"
+            disabled={isScoring || isEnriching}
+          />
 
-        {/* URL Detection Indicator */}
-        {detectedUrl && !isEnriching && !enrichedData && (
-          <div className="absolute top-2 right-2">
-            <Button
-              size="sm"
-              onClick={handleEnrich}
-              className="gap-1.5 bg-primary/90 hover:bg-primary text-xs h-7"
-            >
-              <Wand2 className="h-3 w-3" />
-              Auto-Enrich
-            </Button>
-          </div>
-        )}
+          {/* URL Detection Indicator */}
+          {detectedUrl && !isEnriching && !enrichedData && (
+            <div className="absolute top-3 right-3">
+              <Button
+                size="sm"
+                onClick={handleEnrich}
+                className="gap-1.5 bg-primary/90 hover:bg-primary text-xs h-7 rounded-full"
+              >
+                <Wand2 className="h-3 w-3" />
+                Auto-Enrich
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Enrichment Loading State */}
       {isEnriching && (
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+        <div className="flex items-center gap-3 py-3">
           <Loader2 className="h-4 w-4 animate-spin text-primary" />
-          <div className="flex-1">
+          <div>
             <p className="text-sm font-medium text-foreground">Enriching company data...</p>
             <p className="text-xs text-muted-foreground">Scraping website and extracting company signals</p>
           </div>
@@ -182,12 +184,12 @@ Examples:
       />
 
       {/* Action Buttons */}
-      <div className="flex gap-3 justify-end">
+      <div className="flex gap-3 justify-end pt-4">
         {(hasResult || enrichedData) && (
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={handleReset}
-            className="gap-2"
+            className="gap-2 text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="h-4 w-4" />
             New Analysis
@@ -197,7 +199,7 @@ Examples:
         <Button
           onClick={() => onScore(selectedTone)}
           disabled={isScoring || isEnriching || !value.trim()}
-          className="gap-2 bg-primary hover:bg-primary/90 min-w-[140px]"
+          className="gap-2 bg-primary hover:bg-primary/90 min-w-[160px] rounded-full px-8"
         >
           {isScoring ? (
             <>

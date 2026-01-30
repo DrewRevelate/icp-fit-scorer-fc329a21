@@ -141,21 +141,21 @@ export function BatchScoreInput({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           {hasUrls 
             ? 'Paste company URLs to auto-enrich, or enter company details directly.'
-            : 'Enter one company per line. Include any relevant details on the same line.'}
+            : 'Enter one company per line with relevant details.'}
         </p>
         {companyCount > 0 && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {hasUrls && (
-              <Badge variant="outline" className="gap-1 text-xs">
+              <span className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <Link className="h-3 w-3" />
                 {urlLines.length} URLs
-              </Badge>
+              </span>
             )}
             <span className="text-sm font-medium text-primary flex items-center gap-1.5">
               <ListChecks className="h-4 w-4" />
@@ -165,9 +165,10 @@ export function BatchScoreInput({
         )}
       </div>
       
-      {/* Input */}
-      <Textarea
-        placeholder="Paste multiple companies or URLs, one per line...
+      {/* Input - seamless with ambient glow */}
+      <div className="input-glow rounded-2xl transition-all duration-300">
+        <Textarea
+          placeholder="Paste multiple companies or URLs, one per line...
 
 Examples:
 hubspot.com
@@ -177,20 +178,21 @@ linear.app
 Or enter details directly:
 HubSpot - 7000 employees, Marketing SaaS, Series E
 Stripe - 8000 employees, FinTech, $95B valuation"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="min-h-[200px] bg-secondary/50 border-border resize-none font-mono text-sm"
-        disabled={isScoring || isEnriching || enrichedCompanies.length > 0}
-      />
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="min-h-[200px] bg-secondary/30 border-border/30 resize-none font-mono text-sm rounded-2xl"
+          disabled={isScoring || isEnriching || enrichedCompanies.length > 0}
+        />
+      </div>
 
-      {/* Enrichment Progress */}
+      {/* Enrichment Progress - seamless */}
       <AnimatePresence>
         {isEnriching && enrichProgress && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3"
+            className="space-y-3 py-4"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -202,9 +204,9 @@ Stripe - 8000 employees, FinTech, $95B valuation"
               </span>
             </div>
             
-            <div className="w-full bg-secondary rounded-full h-2">
+            <div className="w-full bg-secondary/50 rounded-full h-1.5">
               <motion.div
-                className="bg-primary h-2 rounded-full"
+                className="bg-primary h-1.5 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ 
                   width: `${((enrichProgress.completed + enrichProgress.failed) / enrichProgress.total) * 100}%` 
@@ -222,18 +224,20 @@ Stripe - 8000 employees, FinTech, $95B valuation"
         )}
       </AnimatePresence>
 
-      {/* Enriched Companies Preview */}
+      {/* Enriched Companies Preview - flowing list */}
       <AnimatePresence>
         {enrichedCompanies.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="rounded-lg border border-success/30 bg-success/5 overflow-hidden"
+            className="space-y-4"
           >
-            <div className="px-4 py-2 border-b border-success/20 bg-success/10 flex items-center justify-between">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-success" />
+                <div className="h-5 w-5 rounded-full bg-success/20 flex items-center justify-center">
+                  <Check className="h-3 w-3 text-success" />
+                </div>
                 <span className="text-sm font-medium text-success">
                   {enrichedCompanies.length} Companies Enriched
                 </span>
@@ -242,24 +246,24 @@ Stripe - 8000 employees, FinTech, $95B valuation"
                 variant="ghost"
                 size="sm"
                 onClick={handleClearEnriched}
-                className="h-7 text-xs"
+                className="h-7 text-xs text-muted-foreground"
               >
                 Clear
               </Button>
             </div>
             
-            <div className="divide-y divide-border/30 max-h-[300px] overflow-y-auto">
+            <div className="space-y-0 max-h-[280px] overflow-y-auto">
               {enrichedCompanies.map((company, index) => (
                 <motion.div
                   key={company.website}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="px-4 py-3 flex items-center justify-between gap-4"
+                  className="inline-row"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-foreground truncate">{company.companyName}</p>
-                    <p className="text-xs text-muted-foreground truncate flex items-center gap-1.5">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                       <span>{company.industry}</span>
                       <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
                       <span>{company.companySize}</span>
@@ -270,9 +274,9 @@ Stripe - 8000 employees, FinTech, $95B valuation"
                   {company.dataSources && (
                     <div className="flex gap-1 shrink-0">
                       {company.dataSources.map(source => (
-                        <Badge key={source} variant="outline" className="text-[10px] px-1.5 py-0 h-5">
+                        <span key={source} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/50 text-muted-foreground">
                           {source}
-                        </Badge>
+                        </span>
                       ))}
                     </div>
                   )}
@@ -281,24 +285,22 @@ Stripe - 8000 employees, FinTech, $95B valuation"
             </div>
 
             {failedUrls.length > 0 && (
-              <div className="px-4 py-2 border-t border-destructive/20 bg-destructive/5">
-                <p className="text-xs text-destructive flex items-center gap-1.5">
-                  <X className="h-3 w-3" />
-                  Failed: {failedUrls.join(', ')}
-                </p>
-              </div>
+              <p className="text-xs text-destructive flex items-center gap-1.5">
+                <X className="h-3 w-3" />
+                Failed: {failedUrls.join(', ')}
+              </p>
             )}
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Actions */}
-      <div className="flex gap-3 justify-end">
+      <div className="flex gap-3 justify-end pt-4">
         {hasResults && (
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={onReset}
-            className="gap-2"
+            className="gap-2 text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="h-4 w-4" />
             New Batch
@@ -308,10 +310,10 @@ Stripe - 8000 employees, FinTech, $95B valuation"
         {/* Show Enrich button when URLs detected and not yet enriched */}
         {hasUrls && enrichedCompanies.length === 0 && !hasResults && (
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={handleEnrichAll}
             disabled={isEnriching || isScoring}
-            className="gap-2 border-primary/50 text-primary hover:bg-primary/10"
+            className="gap-2 text-primary hover:bg-primary/10"
           >
             {isEnriching ? (
               <>
@@ -327,11 +329,11 @@ Stripe - 8000 employees, FinTech, $95B valuation"
           </Button>
         )}
         
-        {/* Score button - either score enriched or score raw */}
+        {/* Score button */}
         <Button
           onClick={enrichedCompanies.length > 0 ? handleScoreEnriched : onScore}
           disabled={isScoring || isEnriching || (companyCount === 0 && enrichedCompanies.length === 0)}
-          className="gap-2 bg-primary hover:bg-primary/90 min-w-[160px]"
+          className="gap-2 bg-primary hover:bg-primary/90 min-w-[160px] rounded-full px-8"
         >
           {isScoring ? (
             <>

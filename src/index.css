@@ -110,90 +110,72 @@
 }
 
 @layer components {
-  /* Fluid section - organic flowing area without hard edges */
+  /* Seamless section - no visible container, just ambient glow */
+  .seamless-section {
+    @apply relative py-8;
+  }
+
+  .seamless-section::before {
+    content: '';
+    position: absolute;
+    inset: -2rem;
+    background: radial-gradient(
+      ellipse at 50% 30%,
+      hsl(25 25% 10% / 0.4) 0%,
+      transparent 60%
+    );
+    pointer-events: none;
+    border-radius: 3rem;
+  }
+
+  /* Fluid section - very subtle ambient background */
   .fluid-section {
-    @apply relative py-6 px-4 sm:px-6;
+    @apply relative py-6;
   }
 
   .fluid-section::before {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: -1rem;
     background: radial-gradient(
       ellipse at 50% 0%,
-      hsl(25 30% 12% / 0.3) 0%,
-      transparent 60%
+      hsl(25 20% 12% / 0.25) 0%,
+      transparent 70%
     );
     pointer-events: none;
     border-radius: 2rem;
   }
 
-  /* Minimal container - subtle background, no borders */
-  .fluid-container {
-    @apply relative;
-    background: linear-gradient(
-      180deg,
-      hsl(20 10% 9% / 0.4) 0%,
-      hsl(20 8% 7% / 0.2) 100%
-    );
-    border-radius: 1.5rem;
-    padding: 1.5rem;
-  }
-
-  /* Only use for primary interactive areas */
+  /* Remove all card styling - use only for critical interactive areas */
   .fluid-card {
-    @apply relative overflow-hidden;
-    background: linear-gradient(
-      135deg,
-      hsl(20 12% 10% / 0.6) 0%,
-      hsl(20 10% 8% / 0.4) 100%
-    );
-    border: 1px solid hsl(25 15% 18% / 0.3);
-    border-radius: 1.5rem;
-    box-shadow: 0 8px 32px rgba(20,10,0,0.2);
-    backdrop-filter: blur(8px);
+    @apply relative;
+    /* No background, no border - truly seamless */
   }
 
-  .fluid-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, hsl(25 50% 45% / 0.2), transparent);
-  }
-
-  /* Inline row - no card, just subtle separation */
+  /* Inline row - seamless with soft hover */
   .inline-row {
-    @apply relative flex items-center gap-4 py-4 transition-colors;
-    border-bottom: 1px solid hsl(25 10% 15% / 0.3);
-  }
-
-  .inline-row:last-child {
-    border-bottom: none;
+    @apply relative flex items-center gap-4 py-4 px-4 -mx-4 transition-all duration-300 rounded-2xl;
   }
 
   .inline-row:hover {
-    background: hsl(25 10% 12% / 0.3);
-    margin-left: -1rem;
-    margin-right: -1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    border-radius: 1rem;
+    background: radial-gradient(
+      ellipse at 50% 50%,
+      hsl(25 20% 14% / 0.5) 0%,
+      hsl(25 15% 10% / 0.2) 100%
+    );
   }
 
-  /* Glass card - use sparingly for emphasis only */
+  /* Glass card - use VERY sparingly, only for modals/overlays */
   .glass-card {
     @apply relative overflow-hidden;
     background: linear-gradient(
       160deg,
-      hsl(20 12% 11% / 0.7) 0%,
-      hsl(20 10% 8% / 0.5) 100%
+      hsl(20 12% 11% / 0.6) 0%,
+      hsl(20 10% 8% / 0.4) 100%
     );
-    border: 1px solid hsl(25 12% 20% / 0.3);
-    border-radius: 1.25rem;
-    box-shadow: 0 4px 24px rgba(20,10,0,0.15);
+    border: 1px solid hsl(25 12% 20% / 0.2);
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 24px rgba(20,10,0,0.1);
     backdrop-filter: blur(6px);
   }
 
@@ -204,7 +186,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, hsl(25 50% 45% / 0.15), transparent);
+    background: linear-gradient(90deg, transparent, hsl(25 50% 45% / 0.1), transparent);
     pointer-events: none;
   }
 
@@ -219,24 +201,7 @@
   }
 
   .glow-effect {
-    box-shadow: var(--shadow-glow), 0 0 60px rgba(200,100,40,0.06);
-  }
-
-  /* Floating section - ambient glow without borders */
-  .floating-section {
-    @apply relative py-8 px-6;
-  }
-
-  .floating-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      ellipse at 50% 0%,
-      hsl(25 40% 15% / 0.1) 0%,
-      transparent 70%
-    );
-    pointer-events: none;
+    box-shadow: 0 0 60px rgba(200,100,40,0.08);
   }
 
   /* Score gauge styles */
@@ -256,54 +221,46 @@
     stroke: hsl(var(--score-strong));
   }
 
-  /* Section label style - flowing, minimal */
+  /* Section label style */
   .section-label {
-    @apply text-xs font-medium uppercase tracking-widest text-muted-foreground/70;
+    @apply text-xs font-medium uppercase tracking-widest text-muted-foreground/60;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  /* Lead text for hero paragraphs */
+  /* Lead text */
   .lead-text {
     @apply text-lg text-muted-foreground leading-relaxed;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  /* Organic divider - soft fade */
+  /* Organic divider - very subtle */
   .organic-divider {
     @apply w-full h-px my-8;
     background: linear-gradient(
       90deg,
-      transparent 0%,
-      hsl(25 20% 25% / 0.3) 30%,
-      hsl(25 20% 25% / 0.3) 70%,
-      transparent 100%
+      transparent 5%,
+      hsl(25 15% 22% / 0.25) 35%,
+      hsl(25 15% 22% / 0.25) 65%,
+      transparent 95%
     );
   }
 
-  /* Content group - no hard edges */
-  .content-group {
-    @apply space-y-4;
-  }
-
-  .content-group-header {
-    @apply flex items-center gap-3 mb-4;
-  }
-
-  .content-group-header h3 {
-    @apply text-lg font-semibold text-foreground;
-  }
-
-  /* Subtle highlight on hover */
+  /* Hover highlight - ambient glow on hover */
   .hover-highlight {
-    @apply transition-all duration-300;
+    @apply transition-all duration-300 rounded-xl -mx-3 px-3;
   }
 
   .hover-highlight:hover {
     background: radial-gradient(
       ellipse at center,
-      hsl(25 30% 15% / 0.2) 0%,
-      transparent 70%
+      hsl(25 25% 14% / 0.3) 0%,
+      transparent 80%
     );
+  }
+
+  /* Input focus glow */
+  .input-glow:focus-within {
+    box-shadow: 0 0 0 2px hsl(25 85% 55% / 0.15), 0 0 40px hsl(25 85% 55% / 0.08);
   }
 }
 

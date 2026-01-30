@@ -97,31 +97,39 @@ export default function ProspectsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-12">
+      {/* Hero section - flowing design */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-4"
+        className="text-center space-y-6 pt-4"
       >
-        <div className="flex justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 glow-effect">
-            <Users className="h-8 w-8 text-primary" />
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="inline-flex items-center gap-3"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 glow-effect">
+            <Users className="h-6 w-6 text-primary" />
           </div>
-        </div>
-        <h1 className="text-4xl font-bold gradient-text">Scored Prospects</h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
+        </motion.div>
+        <h1 className="text-5xl sm:text-6xl font-bold gradient-text leading-tight">
+          Scored Prospects
+        </h1>
+        <p className="text-muted-foreground max-w-xl mx-auto text-lg leading-relaxed">
           View, compare, and manage all your scored companies. 
           Select up to 3 prospects for side-by-side comparison.
         </p>
       </motion.div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
-          <TabsTrigger value="prospects" className="gap-2">
+        <TabsList className="grid w-full max-w-sm mx-auto grid-cols-2 mb-8 bg-secondary/30 p-1 rounded-xl">
+          <TabsTrigger value="prospects" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
             <Target className="h-4 w-4" />
             Prospects
           </TabsTrigger>
-          <TabsTrigger value="engagement" className="gap-2" disabled={!engagementSettings?.engagement_enabled}>
+          <TabsTrigger value="engagement" className="gap-2 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm" disabled={!engagementSettings?.engagement_enabled}>
             <TrendingUp className="h-4 w-4" />
             Engagement
           </TabsTrigger>
@@ -219,14 +227,14 @@ export default function ProspectsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-center py-16 glass-card"
+              className="text-center py-20 fluid-card"
             >
-              <Users className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">No Prospects Yet</h3>
-              <p className="text-muted-foreground mb-6">
+              <Users className="h-16 w-16 text-muted-foreground/30 mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold text-foreground mb-3">No Prospects Yet</h3>
+              <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
                 Start scoring companies to build your prospect list.
               </p>
-              <Button asChild className="bg-primary hover:bg-primary/90">
+              <Button asChild className="bg-primary hover:bg-primary/90 rounded-xl px-6">
                 <a href="/">Score Your First Prospect</a>
               </Button>
             </motion.div>
@@ -254,14 +262,14 @@ export default function ProspectsPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center py-16 glass-card"
+              className="text-center py-20 fluid-card"
             >
-              <TrendingUp className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">Engagement Scoring Disabled</h3>
-              <p className="text-muted-foreground mb-6">
+              <TrendingUp className="h-16 w-16 text-muted-foreground/30 mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold text-foreground mb-3">Engagement Scoring Disabled</h3>
+              <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
                 Enable engagement scoring in Settings → Engage to track lead activity.
               </p>
-              <Button asChild className="bg-primary hover:bg-primary/90">
+              <Button asChild className="bg-primary hover:bg-primary/90 rounded-xl px-6">
                 <a href="/setup">Go to Settings</a>
               </Button>
             </motion.div>

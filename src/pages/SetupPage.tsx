@@ -54,46 +54,54 @@ export default function SetupPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-12">
+      {/* Hero section - flowing design */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-4"
+        className="text-center space-y-6 pt-4"
       >
-        <div className="flex justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 glow-effect">
-            <Settings className="h-8 w-8 text-primary" />
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="inline-flex items-center gap-3"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 glow-effect">
+            <Settings className="h-6 w-6 text-primary" />
           </div>
-        </div>
-        <h1 className="text-4xl font-bold gradient-text">Lead Scoring Configuration</h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
+        </motion.div>
+        <h1 className="text-5xl sm:text-6xl font-bold gradient-text leading-tight">
+          Lead Scoring Configuration
+        </h1>
+        <p className="text-muted-foreground max-w-xl mx-auto text-lg leading-relaxed">
           Configure AI-powered scoring criteria or set up rule-based lead qualification
         </p>
       </motion.div>
 
       <Tabs defaultValue="ai-scoring" className="w-full">
-        <TabsList className="grid w-full grid-cols-6 mb-6">
-          <TabsTrigger value="ai-scoring" className="gap-1 text-xs px-2">
+        <TabsList className="flex flex-wrap justify-center gap-1 mb-8 bg-transparent p-0">
+          <TabsTrigger value="ai-scoring" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
             <Zap className="h-4 w-4" />
             <span className="hidden sm:inline">AI</span>
           </TabsTrigger>
-          <TabsTrigger value="rule-based" className="gap-1 text-xs px-2">
+          <TabsTrigger value="rule-based" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
             <Calculator className="h-4 w-4" />
             <span className="hidden sm:inline">Rules</span>
           </TabsTrigger>
-          <TabsTrigger value="predictive" className="gap-1 text-xs px-2">
+          <TabsTrigger value="predictive" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
             <Brain className="h-4 w-4" />
             <span className="hidden sm:inline">Predictive</span>
           </TabsTrigger>
-          <TabsTrigger value="intent" className="gap-1 text-xs px-2">
+          <TabsTrigger value="intent" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
             <Target className="h-4 w-4" />
             <span className="hidden sm:inline">Intent</span>
           </TabsTrigger>
-          <TabsTrigger value="engagement" className="gap-1 text-xs px-2">
+          <TabsTrigger value="engagement" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
             <Activity className="h-4 w-4" />
             <span className="hidden sm:inline">Engage</span>
           </TabsTrigger>
-          <TabsTrigger value="negative" className="gap-1 text-xs px-2">
+          <TabsTrigger value="negative" className="gap-1.5 text-xs px-4 py-2 rounded-xl bg-secondary/30 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
             <ShieldOff className="h-4 w-4" />
             <span className="hidden sm:inline">Negative</span>
           </TabsTrigger>
@@ -106,7 +114,7 @@ export default function SetupPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="glass-card p-5"
+            className="fluid-card p-6"
           >
             <div className="flex items-center justify-between mb-4">
               <div>
